@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{project.title}}</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="{% block active %}{% endblock %}">
+  <div class="container">
+    <header class="header">
+      {% include "partials/ribbon.html" %}
+      <div class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+          <h1 class="logo">{{project.title}}</h1>
+          <h2 class="title">{% block title %}{% endblock %}</h2>
+        </a>
+        <ul class="dropdown-menu">
+          {% for category in categories %}
+          <li>
+            <a class="{{category.status}}" href="{{category.link}}.html">{{category.name}}</a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </header>
+    <div class="row">
+      <div class="col-md-2 quote">
+     {% block quote %}
+        {% endblock %}
+      </div>
+      <div class="col-md-10 content">
+        <div class="row">
+          {% block content %}
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+    <nav class="menu footer row">
+      <div class="col-md-2 social">
+        {% include "partials/sig.html" %}
+      </div>
+      <div class="col-md-10">
+        <ul>
+          {% for category in categories %}<li><a class="{{category.status}} {{category.name}}" href="{{category.link}}.html">{{category.name}}</a>
+        </li>{% endfor %}
+        <li class="gitter">
+          <a href="https://gitter.im/nonlinear/codecode?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge"><img src="https://badges.gitter.im/Join%20Chat.svg"></a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+<script src="js/main.js"></script>
+</body>
+</html>

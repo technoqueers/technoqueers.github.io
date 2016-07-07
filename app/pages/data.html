@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+{% block active %}data{% endblock %}
+{% block title %}data{% endblock %}
+{% block quote %}DRY the F out{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-4">
+    <h2>Data Macros</h2>
+    <p class="code macro HTML">loop</p>
+    <p class="sig">Base nunjucks loop, gathering data from <span class="code folder">app/data</span></p>
+  </div>
+  <div class="col-md-4">
+    <h2>Locale</h2>
+    <ol class="tutorial">
+      <li>Create a language json file on <span class="code folder">app/data</span></li>
+      <li>variables</li>
+      <li>how to call it</li>
+    </ol>
+  </div>
+  <div class="col-md-4">
+  <ul class="soon">
+    <li>basic json</li>
+    <li>how to create</li>
+    <li>how to loop</li>
+    <li>language files</li>
+    <li>variables for talks and users (height, color, etc)</li>
+  </ul>
+</div>
+</div>
+<div class="row">
+<div class="col-md-6">
+  <p class="code macro HTML">users</p>
+  <p class="sig">user loop, from <span class="code file">app/data/users.json</span></p>
+  <div class="users">
+    {% for user in users %}
+    <div class="user">
+      <div class="avatar">
+        <div class="image" style="background-image: url(images/users/{{user.gender}}/{{user.image}}.jpg);"></div>
+          <div class="title">
+            {{user.username}}
+          </div>
+        </div>
+        <div class="info">
+          <p><label>Name</label> {{user.name.first}} {{user.name.last}}</p>
+          <p><label>Email</label> {{user.email}}</p>
+          <p><label>Address</label> {{user.address}}</p>
+          <p><label>Phone</label> {{user.phone}}</p>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+</div>
+<div class="col-md-6">
+  <p class="code macro HTML">talks</p>
+  <p class="sig">talk loop, from <span class="code file">app/data/talks.json</span></p>
+  <div class="talks">
+    {% for talk in talks %}
+    <div class="talk {{talk.class}}">
+      <div class="avatar">
+        <div class="image" style="background-image: url(images/users/male/{{talk.image}}.jpg);"></div>
+        <div class="title">{{talk.user}}</div>
+      </div>
+      <div class="message">
+        {{talk.message}}
+        <p class="timestamp">{{talk.timestamp}}
+        </p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+</div>
+
+
+
+{% endblock %}

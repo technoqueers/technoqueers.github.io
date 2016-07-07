@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+{% block active %}forms{% endblock %}
+{% block title %}forms{% endblock %}
+{% block quote %}top-notch interactions{% endblock %}
+
+{% block content %}
+<div class="col-md-4">
+  <h2>Form Macros</h2>
+  <p class="code macro HTML">select</p>
+  <table class="legend">
+   <tbody>
+    <tr>
+      <td><p class="code variable">base</p></td>
+      <td>base select</td>
+    </tr>
+    <tr>
+      <td><p class="code variable">auto</p></td>
+      <td>auto select (chosen)</td>
+    </tr>
+    <tr>
+      <td><p class="code variable">multi</p></td>
+      <td>multi select (chosen)</td>
+    </tr>
+  </tbody>
+</table>
+<hr>
+<p class="code macro SASS">disable</p>
+<p class="sig">quick mixin to disable link, drag or select.</p>
+<hr>
+<p class="code macro SASS">placeholder</p>
+<p class="sig">rules for input and textarea placeholders</p>
+<!-- TODO: explain scroll-hint -->
+</div>
+<div class="col-md-4">
+<!-- TODO: style .chosen-drop -->
+  <h2>JSON-Based Macros</h2>
+  <p class="sig">Using loops from <span class="code folder">app/data</span> and styling from <a href="https://harvesthq.github.io/chosen/">Chosen</a></p>
+  <hr>
+  <p class="code macro HTML">month</p>
+  <p class="sig">month select, data from <span class="code file">app/data/month.json</span></p>
+  <div class="select">
+    <select>
+      <option>Month</option>
+      {% for month in months %}
+      <option value="{{month.code}}">{{month.name}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <hr>
+  <p class="code macro HTML">country</p>
+  <p class="sig">country auto select, data from <span class="code file">app/data/country.json</span></p>
+  <div class="select">
+    <select class="chosen-select">
+      <option>Country</option>
+      {% for country in countries %}
+      <option value="{{country.code}}">{{country.name}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <hr>
+  <p class="code macro HTML">state</p>
+  <p class="sig">state auto select, data from <span class="code file">app/data/state.json</span></p>
+  <div class="select">
+    <select class="chosen-select">
+      <option>State</option>
+      {% for state in states %}
+      <option value="{{state.code}}">{{state.name}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <hr>
+  <p class="code macro HTML">industry</p>
+  <p class="sig">industry auto select, data from <span class="code file">app/data/industry.json</span></p>
+  <div class="select">
+    <select class="chosen-select">
+      <option>Industry</option>
+      {% for industry in industries %}
+      <option value="{{industry.name}}">{{industry.name}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <hr>
+  <p class="code macro HTML">year</p>
+  <p class="sig">year auto select, data from <span class="code file">app/data/year.json</span></p>
+  <div class="select">
+    <select class="chosen-select">
+      <option>Year</option>
+      {% for year in years %}
+      <option value="{{year.name}}">{{year.name}}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+<div class="col-md-4">
+  <h2>Advanced fields macros</h2>
+  <p class="code macro HTML">toggle</p>
+  <p class="sig">A nice toggle layout for checkboxes and radiobuttons</p>
+  {% include "partials/toggle.html" %}
+  <hr>
+  <p class="code macro HTML">datepicker</p>
+  {% include "partials/datepicker.html" %}
+  <p class="sig">A template datepicker using bootstrap popover function</p>
+</div>
+
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block active %}typography{% endblock %}
+{% block title %}typography{% endblock %}
+{% block quote %}fonts heaven{% endblock %}
+
+{% block content %}
+<div class="col-md-4">
+ <h2>sample fonts</h2>
+ <p class="code macro SASS">sans</p>
+ <p class="sig">sans-serif fonts sample: Century Gothic, Futura, Helvetica Neue, Palatino, Lucida, Gill Sans</p>
+ <!-- TODO: snippets for common google fonts -->
+ <hr>
+ <p class="code macro SASS">slab</p>
+ <p class="sig">slab-serif fonts sample: Rockwell</p>
+ <hr>
+ <p class="code macro SASS">serif</p>
+ <p class="sig">serif fonts sample: Baskerville, Georgia, Didot, Garamond</p>
+ <hr>
+ <p class="code macro SASS">monospace</p>
+ <p class="sig">monospaced fonts sample: Courier New</p>
+</div>
+<div class="col-md-4">
+  <h2>Add your own font</h2>
+<ul class="nav nav-tabs nav-justified">
+  <li class="active"><a href="#basic" data-toggle="tab">Basic</a></li>
+  <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
+</ul>
+<div class="tab-content">
+  <div class="tab-pane fade in active" id="basic">
+  <ol class="tutorial">
+   <li>Have your font file (find cool and free ones at <a href="http://www.dafont.com" target="_blank">dafont</a>)</li>
+   <li>Generate webfont at <a href="http://www.fontsquirrel.com/tools/webfont-generator">fontsquirrel</a></li>
+   <li>Move resulting webfonts to <p class="code folder">app/fonts</p></li>
+   <li>type <p class="code macro SASS">font-face</p> on your SASS file
+    <p class="sig">variable should match filename</p></li>
+  </ol>
+  </div>
+  <div class="tab-pane fade" id="advanced">
+    <ol class="tutorial">
+       <li>Install <a href="http://brew.sh" target="_blank">Homebrew</a> and dependencies: <p class="code terminal">brew install fontforge ttfautohint ttf2eot batik</p></li>
+      <li>Add a <p class="code file">*.ttf</p> or  <p class="code file">*.otf</p> font on <p class="code folder">app/fontgen</p></li>
+      <li>copy filename, rename if needed
+        <p class="sig">it will become <span class="code SASS">font-family</span></p></li>
+      <li>on terminal, inside your project folder, type <p class="code terminal">gulp fontgen</p>
+       </li>
+       <li>go to top of <p class="code file">app/sass/layout.sass</p> and type <p class="code macro SASS">fontface</p>, paste filename as variable
+        <p class="sig">add this declaration before you call <span class="code SASS">font-family</span> for it to work</p></li>
+       <li>on <p class="code file">app/sass/style.sass</p>, use font filename as variable for either <p class="code SASS">$font-text</p> or <p class="code SASS">$font-title</p></li>
+    </ol>
+  </div>
+</div>
+
+</div>
+<div class="col-md-4">
+  <h2>typography Macros</h2>
+  <p class="code macro SASS">fontface</p>
+  <p class="sig">adds any font from <span class="code folder">app/fonts</span> as <span class="code SASS">font-family</span></p>
+  <hr>
+  <p class="code macro SASS">word-wrap</p>
+  <p class="sig">forces text to flow</p>
+  <hr>
+  <p class="code macro SASS">ellipsis</p>
+  <p class="sig">hides overflow text, adds "..."</p>
+  <hr>
+  <p class="code macro SASS">hide-text</p>
+  <p class="sig">hide object text, visually only.</p>
+</div>
+{% endblock %}
