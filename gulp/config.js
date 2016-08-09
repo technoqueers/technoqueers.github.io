@@ -1,6 +1,6 @@
 var config = {
   sass: {
-    src: './app/sass/style.sass',
+    src: ['./app/sass/style.sass', './app/sass/newsletter.sass'],
     dest: './css',
     error: 'Error Running SASS'
   },
