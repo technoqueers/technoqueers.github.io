@@ -4,5 +4,5 @@ var premailer = require('gulp-premailer');
 gulp.task('inline-css', function () {
     gulp.src('newsletter.html')
         .pipe(premailer())
-        .pipe(gulp.dest('newsletter/'));
+        .pipe(gulp.dest('./'));
 });
