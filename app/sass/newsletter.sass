@@ -1,89 +1,140 @@
-// (\_/)   codecode
-// ('ㅅ')づ free to personalize
-// (")(")  refer to nonlinear.nyc/codecode
-
-// ('ㅅ')づ font variables
-
-$font-title: Tofino-Light
-$font-text: Tofino-Light
-$font-mono: "Courier New", Courier, monospace
-
-
-// ('ㅅ')づ critical variables
-
-$gap: 20px
-$bp: 770px
-
-// ('ㅅ')づ color variables
+$font-title: Helvetica
+$font-text: Helvetica
 
 $color-bg: #333
 $color-text: white
 $color-title: white
-$color-link: grey
-$color-divider: grey
-$color-link-hover: lighten($color-link, 20%)
 
-// button color variables
 
-$button:               #eee
-$button-hover:         darken($button, 10%)
-$button-border:        #999999
-$button-border-hover:  $button-border
-$button-text:          #666
-$button-text-hover:    black
-$color-select:         #b3d4fc
-$color-accent:         $color-select
+=transition($prop: all, $time: 300ms, $ease: ease-out)
+  @if $prop == disable
+    -moz-transition: none !important
+    -webkit-transition: none !important
+  @else
+    -webkit-transition: $prop $time $ease !important
+    -moz-transition: $prop $time $ease !important
+    -ms-transition: $prop $time $ease !important
+    -o-transition: $prop $time $ease !important
+    transition: $prop $time $ease !important
 
-// ('ㅅ')づ status color variables
+=find($color: red)
+  border: dashed 1px $color !important
 
-$status: #eee
-$status-font: #3A4351
-$status-border: #999EA5
-$status-primary: #00A882
-$status-primary-font: white
-$status-primary-border: $status-primary
-$status-success: #1B97BB
-$status-success-font: white
-$status-success-border: $status-success
-$status-warning: #FFA51A
-$status-warning-font: white
-$status-warning-border: $status-warning
-$status-danger: #DB2B53
-$status-danger-font: white
-$status-danger-border: $status-danger
+=size($mode: square, $width: 5px, $height: 5px)
+  width: $width
+  height: $height
+  @if $mode == square
+    width: $width
+    height: $width
+  @else
+    width: $width
+    height: $height
 
-// ('ㅅ')づ toggle variables
+=border-box($mode: border-box)
+  box-sizing: $mode
+  -moz-box-sizing: $mode
+  -webkit-box-sizing: $mode
 
-$toggle_height: 20px
-$toggle_half: ($toggle_height / 2)
-$toggle_width: ($toggle_height * 2)
-$toggle_gap: 1px
-$toggle_bg: $color-bg
-$toggle_off: #999
-$toggle_on: #666
+=radius($mode: normal, $radius-1: 5px, $radius-2: 5px, $radius-3: 5px, $radius-4: 5px)
+  @if $mode == normal
+    -webkit-border-radius: $radius-1
+    -moz-border-radius: $radius-1
+    border-radius: $radius-1
+  @else
+    -webkit-border-top-right-radius: $radius-2
+    -webkit-border-bottom-right-radius: $radius-3
+    -webkit-border-bottom-left-radius: $radius-4
+    -webkit-border-top-left-radius: $radius-1
+    -moz-border-radius-topright: $radius-2
+    -moz-border-radius-bottomright: $radius-3
+    -moz-border-radius-bottomleft: $radius-4
+    -moz-border-radius-topleft: $radius-1
+    border-top-right-radius: $radius-2
+    border-bottom-right-radius: $radius-3
+    border-bottom-left-radius: $radius-4
+    border-top-left-radius: $radius-1
+  -moz-background-clip: padding
+  -webkit-background-clip: padding-box
+  background-clip: padding-box
 
-// ('ㅅ')づ function variables
+=shadow($mode: normal, $shadow: 0 1px 3px rgba(0, 0, 0, 0.25))
+  @if $mode == text
+    -webkit-text-shadow: $shadow
+    -moz-text-shadow: $shadow
+    text-shadow: $shadow
+  @else
+    -webkit-box-shadow: $shadow
+    -moz-box-shadow: $shadow
+    box-shadow: $shadow
 
-$prefixes: webkit moz ms o spec
-$legacy_support_for_ie: false !default
-$icons_on: true
+=opacity($opacity: 40)
+  opacity: $opacity / 100
+  filter: "alpha(opacity=#{$opacity})"
+  -khtml-opacity: $opacity / 100
+  -moz-opacity: $opacity / 100
 
-@import '../../bower_components/font-awesome/scss/font-awesome'
-@import 'vendors/codecode'
-*
-    +border-box
+=reset($type: all)
+  @if $type == margin
+    margin: 0px !important
+  @else if $type == padding
+    padding: 0px !important
+  @else if $type == border
+    border: none
+  @else if $type == bg
+    background: transparent
+  @else if $type == list
+    list-style: none
+  @else if $type == select
+    -moz-appearance: none
+    -webkit-appearance: none
+  @else if $type == shadow
+    +shadow(normal, none)
+  @else if $type == outline
+    outline-width: 0
+    outline: none !important
+    outline-color: transparent
+    outline-style: none
+  @else if $type == shadow-text
+    +shadow(text, none)
+  @else if $type == number
+    &[type=number]::-webkit-inner-spin-button, &[type=number]::-webkit-outer-spin-button
+      -webkit-appearance: none
+      -moz-appearance: none
+      appearance: none
+      margin: 0
+  @else
+    margin: 0px !important
+    padding: 0px !important
+    border: none
+    background: transparent
+    &:focus
+      outline-width: 0
+      outline: none
+      outline-color: transparent
+      outline-style: none
+
+=clearfix
+  zoom: 1
+  &:before,
+  &:after
+    display: table
+    content: ""
+  &:after
+    clear: both
+
+h1, h2, h3, h4, h5, h6
+  font-family: $font-title
+  color: $color-title
+  font-weight: normal
+
 body
-    width: 100%
-    font-family: Helvetica Neue, Helvetica, Arial, sans-serif
-    h1, h2, h3, h4
-        +reset(all)
-        font-family: Helvetica Neue, Helvetica, Arial, sans-serif
-        &.title a
-            color: white
-            text-decoration: none !important
+  background-color: $color-bg
+  color: $color-text
+  font-family: $font-text
 
-    width: 100%
 
+a
+    text-decoration: none !important
 
 a:not(.btn)
     color: #ccc !important
@@ -115,7 +166,6 @@ a:not(.btn)
                         line-height: 80%
                         padding-right: 10px
                         white-space: nowrap
-                        +radius(custom, 0, 5px, 0, 0)
                     &:nth-of-type(2)
                         min-width: 19px
                         background-image: url("http://www.technoqueers.com/images/newsletter/tab.jpg")
@@ -131,8 +181,7 @@ a.btn
     margin-top: 5px !important
     background-color: #FFF
     display: block
-    text-decoration: none
-    width: 100%
+    color: $color-bg
     text-align: center
     padding: 10px
     font-weight: bold
@@ -167,6 +216,7 @@ p
 .tags
     +reset(all)
     +reset(list)
+    margin-top: 5px !important
     li
         font-size: 11px
         color: black
