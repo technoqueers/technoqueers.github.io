@@ -1,5 +1,3 @@
-See [nonlinear.nyc/codecode](http://nonlinear.nyc/codecode)
+# technoqueers
 
-### TODOs
-| Filename | line # | TODO
-|:------|:------:|:------
+Website for [technoqueers.com](https://technoqueers.com)
