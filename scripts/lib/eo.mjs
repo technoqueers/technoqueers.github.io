@@ -44,11 +44,11 @@ export async function fetchAllSentCampaigns() {
     if (!next) break;
     cursor = typeof next === 'string'
       ? next
-      : next.starting_after || new URL(next.href, API_BASE).searchParams.get('starting_after');
+      : next.starting_after || new URL(next.url || next.href, API_BASE).searchParams.get('starting_after');
     if (!cursor) break;
   }
   return campaigns
-    .filter((c) => c.status === 'SENT' && c.sent_at)
+    .filter((c) => c.status?.toUpperCase() === 'SENT' && c.sent_at)
     .sort((a, b) => new Date(a.sent_at) - new Date(b.sent_at));
 }
 

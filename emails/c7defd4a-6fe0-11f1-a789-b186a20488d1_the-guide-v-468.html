@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<!-- Sets size and scale of the viewport. -->
+<meta name="viewport" content="width=device-width" initial-scale="1">
+<!-- IE=Edge makes good things happen on Windows Phones. -->
+<!--[if !mso]>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<![endif]-->
+<!-- Disables auto-scaling in iOS Mail 10. -->
+<meta name="x-apple-disable-message-reformatting">
+<!-- Will display in auto-preview area in some clients. -->
+<title></title>
+<!-- Desktop Outlook defaults to Times New Roman. Forces a less obscene fallback font. -->
+<!--[if mso]>
+<style>
+* { font-family: sans-serif !important; }
+</style>
+<![endif]-->
+<!-- Webfont reference. -->
+<!--[if !mso]><!-->
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700" rel="stylesheet">
+<!--<![endif]-->
+<style>
+/* Box sizing. Gets decent support. */
+*,
+*:after,
+*:before {
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+}
+/* Prevents small text resizing. */
+* {
+-ms-text-size-adjust: 100%;
+-webkit-text-size-adjust: 100%;
+}
+/* Basic reset. Removes default spacing around emails in various clients. */
+html,
+body,
+.document {
+width: 100% !important;
+margin: 0;
+padding: 0;
+}
+/* Improves text rendering when supported. */
+body {
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+text-rendering: optimizeLegibility;
+}
+/* Centers email to device width in Android 4.4. */
+div[style*="margin: 16px 0"] {
+margin: 0 !important;
+}
+/* Removes added spacing within tables in Outlook. */
+table,
+td {
+mso-table-lspace: 0pt;
+mso-table-rspace: 0pt;
+padding: 0;
+}
+/* Removes added spacing within tables in WebKit. */
+table {
+border-spacing: 0;
+border-collapse: collapse;
+table-layout: fixed;
+margin: 0 auto;
+}
+/* Responsive images. Improves rendering of scaled images in IE. */
+img {
+-ms-interpolation-mode: bicubic;
+max-width: 100%;
+border: 0;
+}
+/* Overrules triggered links in iOS. */
+*[x-apple-data-detectors] {
+color: inherit !important;
+text-decoration: none !important;
+}
+/* Overrules triggered links in Gmail. */
+.x-gmail-data-detectors,
+.x-gmail-data-detectors *,
+.aBn {
+border-bottom: 0 !important;
+cursor: default !important;
+}
+/* Define font */
+body,
+html,
+td {
+font-family: Inter, "Trebuchet MS", Avenir, "Segoe UI", sans-serif;/* Font family */
+color: rgb(0, 0, 0);/* Font color */
+}
+a, .container a{
+color: #000000; /* Link color */
+text-decoration: underline; /* Link decoration */
+}
+/* Media queries o' doom. */
+@media screen and (max-width: 450px) {
+/* Transitions container to a fluid layout. */
+.container {
+width: 100%;
+margin: auto;
+}
+/* Collapses table cells into full-width rows. */
+.stack {
+display: block!important;
+width: 100%!important;
+max-width: 100%!important;
+}
+/* Centers and expands CTA. */
+.eo-button{
+width: 100%!important;
+text-align: center;
+margin: auto!important;
+}
+.eo-button td, .eo-button tr {
+display: block!important;
+}
+}
+</style>
+<style id="v3-editor-styles">
+.emoji {
+font-family: EmojiMart, 'Segoe UI Emoji', 'Segoe UI Symbol', 'Segoe UI', 'Apple Color Emoji', 'Twemoji Mozilla', 'Noto Color Emoji', 'Android Emoji';
+}
+.text-block li {
+/* The web Gmail client will add 0.6em of bottom padding to each list item. */
+/* This overrides that, so the list is rendered as in the editor. */
+padding-bottom: 0!important;
+}
+.text-block ul[data-position='inside'] li > div,
+.text-block ol[data-position='inside'] li > div {
+display: inline;
+}
+.text-block ul[data-position='inside'] li > div ~ div,
+.text-block ol[data-position='inside'] li > div ~ div {
+display: block;
+}
+.text-block {
+word-wrap: break-word;
+}
+</style><!--[if (gte mso 9)|(IE)]><!--><link href="https://fonts.googleapis.com/css2?family=Inter&amp;display=swap" rel="stylesheet"><!--<![endif]--></head>
+<body style="color: rgb(0, 0, 0); font-family: Inter, &quot;Trebuchet MS&quot;, Avenir, &quot;Segoe UI&quot;, sans-serif; font-size: 18px; background-color: #dadadb;" eo-background="" class="" bgcolor="#dadadb">
+		<div id="archive-nav" style="background-color:#6e6e6e;padding:14px 20px;font-family:'Courier New',monospace;">
+			<a href="../archive.html" style="color:#ffffff;font-weight:700;font-size:17px;letter-spacing:0.5px;text-transform:uppercase;text-decoration:none;">technoqueers</a><span style="color:rgba(255,255,255,0.35);font-weight:700;font-size:17px;">&nbsp;/&nbsp;</span><span style="color:rgba(255,255,255,0.5);font-weight:700;font-size:17px;letter-spacing:0.5px;text-transform:uppercase;">archive</span>
+		</div>
+
+<!-- Preheader text. Visible in inbox preview, not in email body. -->
+<div style="display: none; max-height: 0px; overflow: hidden;">
+{{PreviewText}}
+</div>
+<!-- Hack to manage presentation of preheader text. -->
+<div style="display: none; max-height: 0px; overflow: hidden;">{% if PreviewText %}&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;{% endif %}</div>
+<table role="presentation" class="document" align="center">
+<tbody>
+<tr>
+<td valign="top">
+<!-- Main -->
+<table role="presentation" class="container" eo-background-container="" style="margin: 0px auto;" width="650" cellspacing="0" cellpadding="0" border="0" align="center">
+<tbody>
+<tr class="inner-body">
+<td>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" align="center">
+<!-- Header!-->
+<tbody>
+<tr class="header">
+<td class="container" style="background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;" eo-header="" bgcolor="">
+<table role="presentation" width="100%">
+<tbody>
+<tr>
+<td class="container" eo-row-container="">
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<!--Main body-->
+<tr style="" eo-body="" bgcolor="">
+<td class="container" eo-row-container="">
+<table role="presentation" class="container" style="margin-bottom: 0px; position: static; padding-top: 5px; padding-bottom: 5px;" eo-row="one-column" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 0px 0px 15px;" eo-block-container="" width="100%"><table style="
+table-layout: fixed;
+width: 100%;
+" eo-block="divider" role="presentation" aria="hidden" width="100%" bgcolor="">
+<tbody>
+<tr>
+<td style="min-width: 100%; padding-top: 50px; padding-bottom: 0px;">
+<table style="border-top: 1px rgb(220, 214, 209); border-collapse: collapse; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="center">
+<tbody>
+<tr>
+<td>
+<span></span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" class="container" style="margin-bottom: 10px; margin-top: 10px; position: static;" eo-block="logo" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="hero" style="border-collapse: collapse; border-spacing: 0px; margin: 0px; padding: 0px 10px;" valign="top" align="center">
+<a href="https://technoqueers.com/">
+<img alt="" style="width: 100%; max-width: 100%; object-fit: cover; padding: 0px; outline: none; border: medium; display: block;" src="https://gallery.eocampaign1.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2F1700244235279-183c2c69-d64d-0ea8-4366-84afa6db964c.png" width="650">
+</a>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td>
+<table role="presentation" class="container" eo-background-container="" style="margin: 0px auto;" eo-footer="" width="650" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<!-- Footer -->
+<tbody><tr>
+<td class="container" eo-row-container=""><table class="container" style="margin-bottom: 0; position: static;padding-top: 5px; padding-bottom: 5px" eo-row="one-column" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 0 15px 15px;" eo-block-container="" width="100%"><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 15px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div style="text-align: center;"><a target="_blank" rel="noopener noreferrer" href="https://soundcloud.com/technoqueers/likes">+ </a><a target="_blank" rel="noopener noreferrer" href="https://soundcloud.com/technoqueers/likes" style="color: rgb(0, 0, 0);">mixes of the week +</a></div><div style="text-align: center;"><br></div><div style="text-align: center;"><a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app">+ Funqtion +</a></div><div style="text-align: center;"><a target="_blank" rel="noopener noreferrer nofollow" href="http://cal.red/">+ CAL.RED/ +</a></div><div style="text-align: center;"><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DZqGD5pnGGD/?img_index=3">+&nbsp;Dykes and Dolls Pride Month Calendar +</a></div><div style="text-align: center;"><br></div><div style="text-align: center;">We're testing out new formatting to make our emails easier to read. Let us know what you think via our&nbsp;<a target="_blank" rel="noopener noreferrer nofollow" href="https://docs.google.com/forms/d/e/1FAIpQLSf2ZLv0drnZBChl8Xeikf_B-rthXWjA6lY9ErG5HnrL6y6Mug/viewform">anonymous feedback form</a>&nbsp;&lt;3</div><div style="text-align: center;"><br></div><div style="text-align: center;"><a target="_blank" rel="noopener noreferrer nofollow" href="{{WebVersionURL}}">view this email in your browser</a></div></div>
+</td>
+</tr>
+</tbody>
+</table><table style="
+table-layout: fixed;
+width: 100%;
+" eo-block="divider" role="presentation" aria="hidden" width="100%" bgcolor="">
+<tbody>
+<tr>
+<td style="min-width:100%;padding-top:15px; padding-bottom:15px;">
+<table style="border-top: 1px rgb(220, 214, 209); border-collapse: collapse; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="center">
+<tbody>
+<tr>
+<td>
+<span></span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table><table class="container" style="margin-bottom: 5px;margin-top: 5px;" eo-block="image" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="hero" style="border-collapse: collapse; border-spacing: 0; margin: 0;padding: 0;" valign="top" align="center">
+<img src="https://gallery.eomail4.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2F019efa33-2ddf-7880-8636-c61b6c40257f.png" style="width: 100%; max-width: 100%; object-fit: cover; padding: 0px; outline: none; border: medium; display: block;" width="620">
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 15px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/w16b04?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Luar Presents</u></a> [Juliana Huxtable, Sterling Juan Diaz, Morenxxx, Alexis De La Rosa] [Signal] [10p-5a]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/srghhd?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>DL Pride</u></a> [Mike Servito, Byrell The Great, Ketia, Tommy Hart, Skywalker] [Silo] [10p-4a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/cx1v7m?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Redirect Pride!</u></a> [Justin Cudmore, Scotia, Maenad, Narkangel, Cotton, Hndrnc, Constructible] [GR] [10p-4a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/k3pmta?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Bears Are Animals</u></a> [Nick Schiarizzy, Scotia, S'aint Panic] [Animal] [4p-4a]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DZGbd8kJTfK/"><u>Pat</u></a> [Amber Valentine, JD Samson, Tylerkinesis, K8 Hardy, Joopiter, Kim Anh, P1nkstar, Dicap] [Union Pool] [8p-3a]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/g1dq1j?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Romance</u></a> [Eli Escobar] [Gabriela] [9p-3a]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/av061n?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Bubble_cxm</u></a> [Oyyster, Fashion, Nguyendowsxp, Iku, P41dz, Zah, Mahal Kita, Sina, Cxmc0r3 Rave, The Dance Pit, Ohyung, Moong!rl, Nguyen Thi Quin] [Paragon] [9:30p-4a]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/kjt6xr?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Daytona 500: Pride</u></a> [St. Mozelle, Thembow, Caín Lima, Daytona 500 [DJ Deadname b2b Eva Loveless] [Bossa] [10p-4a]</div><div><br></div><div>+&nbsp;<a target="_blank" rel="noopener noreferrer nofollow" href="https://ra.co/events/2428657">Party For Change x Haus of Lil Girlz</a> [MR] [10p-3a] [<span style="font-size: 14px;"><em>Fundraiser for&nbsp;</em></span><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.aliforneycenter.org/"><span style="font-size: 14px;"><em>The Ali Forney Center</em></span></a>]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/pjw7vc?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>C*m On Everybody</u></a> [Sir Pig] [C'mon] [10p-3a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/dyza8y?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Pride For Palestine</u></a> [Vice, Honey Bun, Geotheory] [The Concord] [7-11p]</div><div><br></div><div>+&nbsp;<a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DZiVeRsR0_w/">Club Kaje Launch Party</a> [Maria Chávez (live)] [74 15th St] [7:30p-?] [<span style="font-size: 14px;"><em>Non-profit in Gowanus supporting experimental art</em></span>]</div><div><br></div><div>+&nbsp;<a target="_blank" rel="noopener noreferrer nofollow" href="https://pioneerworks.org/programs/laurel-halo">Laurel Halo, Ash Fure</a> [PW] [7p-?]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/9qmdz3?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Ultramaroon Pride</u></a> [Morabito, Someone From Berlin, Michael Cignarale] [Eden] [10p-3a]</div><div><br></div><div>+&nbsp;<a target="_blank" rel="noopener noreferrer nofollow" href="https://ra.co/events/2460335">DYKE Dungeon</a> [Jet Red!, Bbygrl, Pauli Cakes, Xana 101, Skin Contact, Purp] [The House - 29 Locust St] [10p-4a]</div></div>
+</td>
+</tr>
+</tbody>
+</table><table style="
+table-layout: fixed;
+width: 100%;
+" eo-block="divider" role="presentation" aria="hidden" width="100%" bgcolor="">
+<tbody>
+<tr>
+<td style="min-width:100%;padding-top:15px; padding-bottom:15px;">
+<table style="border-top: 1px rgb(220, 214, 209); border-collapse: collapse; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="center">
+<tbody>
+<tr>
+<td>
+<span></span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table><table class="container" style="margin-bottom: 5px;margin-top: 5px;" eo-block="image" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="hero" style="border-collapse: collapse; border-spacing: 0; margin: 0;padding: 0;" valign="top" align="center">
+<img src="https://gallery.eomail4.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2F019efa33-292b-722d-85b0-575791918c6f.png" style="
+width: 100%;
+max-width: 100%;
+object-fit: cover;
+padding: 0;
+outline: none;
+border: none;
+display: block;
+" width="620">
+</td>
+</tr>
+</tbody>
+</table><table class="container" style="margin-bottom: 5px;margin-top: 5px;" eo-block="image" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="hero" style="border-collapse: collapse; border-spacing: 0; margin: 0;padding: 0;" valign="top" align="center">
+<a href="https://www.instagram.com/p/DZduo3uxCl6/" target="_blank"><img src="https://gallery.eomail4.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2F019efb79-7952-7cae-a428-cfa35548ef8a.jpg" style="
+width: 100%;
+max-width: 100%;
+object-fit: cover;
+padding: 0;
+outline: none;
+border: none;
+display: block;
+" width="620"></a>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 15px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/d4ayrc?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Merge This Way [pride]</u></a> [Volvox, Boris, Phase Fatale, Lea Occhi, Juana, Ne/re/a, Auspex, <a target="_blank" rel="noopener noreferrer nofollow" href="https://www.raveforum.club/editorials/roi-perez-and-the-normalization-of-zionism-in-our-community.html">Roi Perez</a>, Rachel Noon, Nick Bazzano, S'aint Panic] [TBA - Brooklyn] [11-2p]&nbsp;&nbsp;</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/5v0ynj?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Party Line</u></a> [Ge-ology, Deon Jamar] [TBA] [10p-8a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/m17kpb?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Bound Pride</u></a> [Samantha Togni, Cotton, Katie Rex, Sedef Adasï, Josh Steers, Joselo] [Basement] [10:30p-7a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DZOLnOjtgIj/">Black Market presents Birthrite Pride &amp; Two Year Anniversary</a> [Eli Escobar, Ch3ri, Boy Cordero, Vrtl] [3DB] [10p-6a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://dice.fm/partner/tickets/event/2w85b6-horse-meat-disco-new-york-pride-26th-jun-knockdown-center-new-york-tickets">Horse Meat Disco</a> [Kim Anh, Sekucci b2b Sterling Juan Diaz, X3butterfly, Horse Meat Disco] [Knockdown] [10p-5a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/2ndnag?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>9000 Dreams</u></a> [Avalon Emerson, Elissa Suckdog, Olof Dreijer] [Nowadays] [10p-6a]</div><div><br></div><div>+&nbsp;<a target="_blank" rel="noopener noreferrer nofollow" href="https://ra.co/events/2437124">The Sapphic Party</a> [Halima (live), Sevyn, Mariposa,&nbsp;Day/Dem] [Bossa] [10p-4a]</div><div>&nbsp;&nbsp;</div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/zxx3de?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Pride</u></a> [Thunderpuss, Mike Servito, Miss Parker, Loka, Vile] [Paragon] [9:30p-3a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://dice.fm/event/nv6x89-transmit-pride-26th-jun-purgatory-new-york-tickets">Transmit: Pride</a> [CMD+Jazmine, Bcables, Dissolvedgrl, Alia b2b Bcables] [Purgatory] [11p-3a]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/64b967?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Night &amp; Day Pride</u></a> [Mcmlxxxv, Makadsi, Bézier, Chris Cruse, Rosa Peligrosa, Concrete Husband, Manu Miran] [Signal] [10-3p]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://ra.co/events/2417527">Cunter: A Silo Pride Party</a> [DJ Fuckoff, Shyboi] [Silo] [10p-4a]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/8bn30d?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Honey Bun</u></a> [Mansions] [10p-4a]</div><div><br></div><div>+&nbsp;<a target="_blank" rel="noopener noreferrer nofollow" href="https://ra.co/events/2435713">XOXA Pride</a> [DJ Shannon, Michelle Manetti, Father Dukes, Materia Hache, Michael Cignarale] [GR] [10p-5a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/j3tabz?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>4am NYC</u></a> [Animal] [10p-4a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DZc-DUZlSHM/?img_index=1">Aquasonic</a> [Echor, Emsho, Eva Loveless] [Secret Location] [7p-12a] [<span style="font-size: 14px;"><em>#deeplistening</em></span>]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/f0xftg?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Car Culture [live], Ryley Walker</u></a> [PR] [7-10p]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/ztfxq8?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Diva Diva</u></a> [Honcho, Mutualism, Lis Dalton, Djpt, DJ Nsa, Mondo Nexus] [PR] [11p-4a]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/6kp6g1?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Pride</u></a> [Hex Hector, DJ Usa, Flirty800] [Club Rawhide] [8p-4a]</div><div>&nbsp;&nbsp;</div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/f0kv6z?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Bears Ahoy! Pride Party Cruise On The Hudson</u></a> [DJ Peter Napoli, Go Go Bears] [Circle Line - Midtown] [7-12p]</div><div><br></div><div>+&nbsp;<a target="_blank" rel="noopener noreferrer nofollow" href="https://ra.co/events/2440219">Good Friday Pride</a> [Ultra Naté, DJ Dawson, Dropo, Mitch Ferrino, Boomer Banks, Derek Monteiro] [Red Eye] [10p-4a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://gaycitynews.com/nyc-drag-march-harlem-pride-dyke-march-pride-2026/">The 32nd Annual NYC Drag March</a> [Gather: 7p, Tompkins Sq Park. Step Off: 8p, March to Stonewall Inn]</div></div>
+</td>
+</tr>
+</tbody>
+</table><table style="
+table-layout: fixed;
+width: 100%;
+" eo-block="divider" role="presentation" aria="hidden" width="100%" bgcolor="">
+<tbody>
+<tr>
+<td style="min-width:100%;padding-top:15px; padding-bottom:15px;">
+<table style="border-top: 1px rgb(220, 214, 209); border-collapse: collapse; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="center">
+<tbody>
+<tr>
+<td>
+<span></span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table><table class="container" style="margin-bottom: 5px;margin-top: 5px;" eo-block="image" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="hero" style="border-collapse: collapse; border-spacing: 0; margin: 0;padding: 0;" valign="top" align="center">
+<img src="https://gallery.eomail4.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2F019efa33-2d2c-7b96-8558-b61a0cfcad81.png" style="
+width: 100%;
+max-width: 100%;
+object-fit: cover;
+padding: 0;
+outline: none;
+border: none;
+display: block;
+" width="620">
+</td>
+</tr>
+</tbody>
+</table><table class="container" style="margin-bottom: 5px;margin-top: 5px;" eo-block="image" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="hero" style="border-collapse: collapse; border-spacing: 0; margin: 0;padding: 0;" valign="top" align="center">
+<a href="http://technoqueers.com" target="_blank"><img src="https://gallery.eomail4.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2F019efad7-017e-7884-bfa3-7645f5f89e4d.jpg" style="
+width: 100%;
+max-width: 100%;
+object-fit: cover;
+padding: 0;
+outline: none;
+border: none;
+display: block;
+" width="620"></a>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 15px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/ymd3tq?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Sanctuary After Dark: Legacies Of Queer Nightlife Presented In Collaboration With Body Hack</u></a> [Body Hack, Aldo Hernandez, Alice O'malley, Anh Vo, Buffy, Julie Tolentino, Lola Flash, Viento Izquierdo Ugaz, D1nah, Fashion] [Nowadays] [2-6p]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/3x9ps0?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Chlomosexual Presents: Fag!</u></a> [Archangel, Babeitspurr, Dj Mangovape, Devin Kasparian, G.io, Tasheff, Charmed] [H0L0] [4-10p]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/vmwehh?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25">Body Hack Pride Nonstop</a> [10p-1a: 999 ADJ, 1-1:30a: Ayanna Ife (live), 1:30-4a: Archangel, 4-6:30a: Blaize b2b Punkal0id, ...] [Nowadays]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://ra.co/events/2430874">Market Hotel Pride: Alphabet Mafia</a> [Pauli Cakes, DJ Thank You, Syd, Angel Money, Monib, Mthrtrsa, Bitchmachine, Blaize] [MH] [11p-?]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/hkdqsk?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Boom Boom Revolution&nbsp;presents:&nbsp;Caribbean&nbsp;Heritage&nbsp;Pride</u></a> [Telfar, DJ Sour, A.P. Glam, Raisa Flowers, Sexinchurch] [Bossa] [10p-4a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/3b9fc7?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Pride</u></a> [Boris, Byrell The Great, Leonce, Kandylion, Sprfrk, Joselo, Linapary] [Paragon] [9:30p-3a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/eahszf?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Get Wrecked &amp; Carry - Pride</u></a> [Manny Ward, Gabrielle Kwarteng, Isabella, Wrecked, The Carry Nation, Mark Holcomb, Lakuti, Tama Sumo, Alinka, Josh Caffé, Miss Parker, Scotia] [KDC] [4p-6a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/cfe0jz?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Volvox &amp; Dominga / Amoral / Mos / Massimiliano Pagliara / Lauren Flax / Sterling Juan Diaz</u></a> [Basement] [10:30p-7a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/rs7dbr?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Dickappointment Pride</u></a> [Bobby Beethoven (FKA Total Freedom, Kendollaz, Daniro, Pressure Point, Kuntress, Black Daria, Kenni Javon, Brown Liquah, Libby Brothers] [TCF] [10p-7a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/e17d8k?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Floorgasm</u></a> [Lsdxoxo, Cortisa Star, Joey Beltram, Mcr-t, Sausha, Tygapaw, Tt] [99S] [10p-5a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/j5cgyj?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Sprklbb &amp; Love Letters</u></a> [Mansions] [10p-4a]</div><div><br></div><div>+&nbsp;<a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/events/wrmd5z?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25">Refuge Pride Marathon: ma++er + Honcho + J&amp;J Repairs</a> [Vitor Calderone, Avision, Justin Cudmore, Tony Humphries, Yvonne Turner, Gideön, Honcho, S4M23, Sister Zo, T.Wan] [Refuge] [Sat 4p - Sun 10p] [<span style="font-size: 14px;"><em>Indoor &amp; outdoor stages &amp; local food vendors</em></span>]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/t7cbh9?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Signal Pride</u></a> [Kim Ann Foxman, Mike Servito, Shaun J. Wright, Karim Olen Ash, Maenad] [Signal] [10p-6a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/bw37mw?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Body High Pride: Whacking Edition</u></a> [Varsha, Theoretic, Robin Flux] [Honey's] [3-9p]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/q1vfhg?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Pride Prom Night</u></a> [Blaize, Madre Guía, Babeitspurr, Code Abi, Stargrl, Polaris, Aggie] [Honey's] [9p-2a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/pjpv0q?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>718 Sessions Pride Celebration 2026</u></a> [Danny Krivit, Benny Soto, Mikki Afflick] [GR] [10p-5a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/events/d1bbdd?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25">Tradecraft [Bobby Duron &amp; Kindbud], Corey Craig</a> [Animal] [2p-4a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/z4e40j?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Andi</u></a> [Gabriela] [9p-3a]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/73w0gg?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Ladyland Festival</u></a> [Kim Petras, Romy, Cupcakke, DJ Gigola, DJ Meredith Marks, Babymorocco, Bayli, Hannah Diamond, Sam Quealy, Maara, Oza, Muchas Problemas, The Illustrious Blacks, Amarji King, Coyado, Dane Deveraux, Joopiter, Markus, P1nkstar] [Under The ‘k’ Bridge Park] [7p-2a]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/gtrr62?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>New York Music Month: Magic City X Bodega Jams</u></a> [Jubilee, Ultraviolet, Quiana Parks, Dada Cozmic, Zuzuka Poderosa] [Herbert Von King Park] [5-10p]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/re3380?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Conteanental Pride 2026</u></a> [Charlene, Rify Royalty, Ivy Fischer, Riccardo Tavarez, Greg Scarnici, Mondo Nexus] [Body By Brooklyn] [6p-12a]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/yzp6nw?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Sendero Release Party - Bliss Point</u></a> [Datadata, Modrums, Lollise, Matük, DJ Synclaire, DJ Synclaire, Max In The World, Kroba, Color Theory] [TBA - Secret Bed-stuy Location] [9p-4a]</div><div><br></div><div>+&nbsp;<a target="_blank" rel="noopener noreferrer nofollow" href="https://ra.co/events/2473738">QUENCH hosted by Princess</a> [Run P., Nativesun, Special Guests] [Friends &amp; Lovers] [10p-4a] [<span style="font-size: 14px;"><em>QUENCH celebrates Pride, Caribbean American Heritage, Black music and more.</em></span>]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/hd008t?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Automesse Presents Rev: Pride!</u></a> [Junior M, Danny Loftus, Arvin T, Tube] [Beverly's] [10p-?]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/qejeky?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>House Of Diggs Pride</u></a> [DJ Holographic, Ysheso__, Dee Diggs, Bearcat, DJ Deadname] [PR] [11p-4a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/1pc6q2?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Dirty Presents Top Shortage</u></a> [Brutal Twink, Swimmie, Subcultures, Donatella Leroc, Senorita Juicy] [LB] [4-10p]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/66kxdb?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Morabito, Dawson, Boomer Banks</u></a> [<a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DZxMjOyFtoI/?img_index=1">Club Rawhide</a>] [8p-4a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DZnL1BDDtjF/?img_index=14">Deep Les &amp; Queer Aperitivo</a> [Boston Chery, Dreamer] [Parkside] [9p-4a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DXKYtfxCdMT/">The 34th Annual NYC Dyke March: Hot Dykes Melt ICE</a> [Step Off: 5p, Bryant Park]</div></div>
+</td>
+</tr>
+</tbody>
+</table><table style="
+table-layout: fixed;
+width: 100%;
+" eo-block="divider" role="presentation" aria="hidden" width="100%" bgcolor="">
+<tbody>
+<tr>
+<td style="min-width: 100%; padding: 15px 0px;">
+<table style="border-top: 1px rgb(220, 214, 209); border-collapse: collapse; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="center">
+<tbody>
+<tr>
+<td>
+<span></span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table><table class="container" style="margin-bottom: 5px;margin-top: 5px;" eo-block="image" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="hero" style="border-collapse: collapse; border-spacing: 0; margin: 0;padding: 0;" valign="top" align="center">
+<img src="https://gallery.eomail4.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2F019efa33-2d2f-7ec4-8124-75215d65f0a5.png" style="
+width: 100%;
+max-width: 100%;
+object-fit: cover;
+padding: 0;
+outline: none;
+border: none;
+display: block;
+" width="620">
+</td>
+</tr>
+</tbody>
+</table><table class="container" style="margin-bottom: 5px;margin-top: 5px;" eo-block="image" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="hero" style="border-collapse: collapse; border-spacing: 0; margin: 0;padding: 0;" valign="top" align="center">
+<a href="https://funqtion.app/events/ayv4xb?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25" target="_blank"><img src="https://gallery.eomail4.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2F019efd1d-148d-753f-bbbc-0e783fc5c22a.jpeg" style="
+width: 100%;
+max-width: 100%;
+object-fit: cover;
+padding: 0;
+outline: none;
+border: none;
+display: block;
+" width="620"></a>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 15px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/vmwehh?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25">Body Hack Pride Nonstop</a> [... 6:30-9a: Amarji King, 9a-12p: Juliana Huxtable, 12-3p: Maya Margarita. Backyard: Alaiyia Nicole (live), Arewà Basit (live), Buster Keaton b2b Hound, Lun★, Nana Xoxo] [Nowadays]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/m0mv29?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Mx Sunday Pride</u></a> [DJ Delish, A Special Guest] [Nowadays] [3-9p]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/ftpyx6?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Body Hack Pride Afterparty</u></a> [Naija Couture, Sexinchurch, Gia Love (live), Dualité (live), sydfalls, Miss Parker. Backyard: Oomfcon, Robyn DaBank, Gagbert, Malcolm XL, Qween Jean (live)] [Nowadays] [9p-4a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/1wkaff?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>T4t Luv Nrg Pride</u></a> [Eris Drew, Octo Octa] [Ruins At KDC] [3-10p]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/cj63ex?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Sinderella Queer Ball</u></a> [Babysp1der, Donis, Daniro, Klipkilla, Talia Goddess] [House Of Yes] [10p-4:30a] [<span style="font-size: 14px;"><em>This night unfolds like a Black, queer oasis where we gather to celebrate each other, our joy, and our unapologetic expression.</em></span>]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/z3y9m6?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Sunday Skate Club</u></a> [Ysheso__, La Vega, Onlyfemmes, Remniqe, J.n.r.] [Xanadu] [8p-12a]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/jwy1sk?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Pep Rally</u></a> [Chippy Nonstop, Nene H, Bobby Beethoven, Karim Olen Ash, DJ Miss Parker, Sterling Juan Diaz] [Superior Ingredients] [2-10p]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/6yxvmf?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Papi Juice Vol 114: 13 Year Anniversary And Pride</u></a> [Oscar Nñ, Adam R, Bearcat, Byrell The Great, Sterling Juan Diaz, Zarina, Choque, Battygyal, Nana Xoxo] [GR] [10p-5a]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/hx8hgq?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>The Exley 6th Annual Pride Block Party.</u></a> [Tigga Calore, Johnny Dynell, Danny Loftus] [The Exley] [2p-?]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/events/vba3he?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25">Kandylion, Ricky Mawzlin, Hope 808,&nbsp;Special&nbsp;Guest</a> [Animal] [2p-4a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/aay2hp?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Pride</u></a> [Tt, Special Guest] [Bossa] [10p-4a]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/75tdnf?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Ritual</u></a> [Colored Craig, Ctrlzora, Doula] [PR] [4-10p] [<span style="font-size: 14px;"><em>Ritual centers Black and Brown artists, uniting established and emerging DJs.</em></span>]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/1s2b0a?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Pride: Hoy X Glitterbox X Tiki Disco</u></a> [DJ Minx, Eli Escobar, Andy Pry Ortega, Lloydski,&nbsp;Jd Samson, Amber Valentine] [Industry City] [2-11p]</div><div><br></div><div>+&nbsp;<a target="_blank" rel="noopener noreferrer nofollow" href="https://ra.co/events/2475417">Doula Invites: Princess Peggie</a> [Silence Please] [11a-2p]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/qgr85g?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25">Occupy The Disco, Tory Stiletto, Miguel Clark, Honey Bun, Sevyn</a> [LB] [3p-3a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/nmg98x?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>718 Sessions Pride Boat Party</u></a> [Danny Krivit] [Circle Line - Midtown] [6p-12a]</div><div><br></div><div>+&nbsp;<a target="_blank" rel="noopener noreferrer nofollow" href="https://ra.co/events/2474683">Jeffrey Sfire, W. Jeremy, Mitch Ferrino, Battygyal</a> [Club Rawhide] [6p-4a]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/xgbnvv?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Hot For You - Pride</u></a> [Justin Strauss] [Parkside] [10p-4a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/67f2tm?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Battle Hymn Pride</u></a> [Kim Anh, The Carry Nation, Tom Peters] [Rumi] [8:30p-5a]</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://queermarch.org/">The 8th Annual Queer Liberation March:&nbsp;Breaking the Chains of War and Oppression for Trans and Immigrant Rights</a> [Gather: 2:30p, Union Sq West. Step Off: 3p, March to Foley Sq]</div></div>
+</td>
+</tr>
+</tbody>
+</table><table style="
+table-layout: fixed;
+width: 100%;
+" eo-block="divider" role="presentation" aria="hidden" width="100%" bgcolor="">
+<tbody>
+<tr>
+<td style="min-width: 100%; padding: 15px 0px;">
+<table style="border-top: 1px rgb(220, 214, 209); border-collapse: collapse; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="center">
+<tbody>
+<tr>
+<td>
+<span></span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table><table class="container" style="margin-bottom: 5px;margin-top: 5px;" eo-block="image" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="hero" style="border-collapse: collapse; border-spacing: 0; margin: 0;padding: 0;" valign="top" align="center">
+<img src="https://gallery.eomail4.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2F019efa33-2920-7b6d-a43b-435b96726c0c.png" style="
+width: 100%;
+max-width: 100%;
+object-fit: cover;
+padding: 0;
+outline: none;
+border: none;
+display: block;
+" width="620">
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 15px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/2xcfd5?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Myrtle Baths 3</u></a> [S'aint Panic, Boy Problem, Unique Devices, Ricky Mawzlin, Zeigler, Mizu] [Bossa] [10p-4a]</div></div>
+</td>
+</tr>
+</tbody>
+</table><table class="container" style="margin-bottom: 5px;margin-top: 5px;" eo-block="image" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="hero" style="border-collapse: collapse; border-spacing: 0; margin: 0;padding: 0;" valign="top" align="center">
+<img src="https://gallery.eomail4.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2F019efa33-308b-761a-8652-ba9b198705ec.png" style="
+width: 100%;
+max-width: 100%;
+object-fit: cover;
+padding: 0;
+outline: none;
+border: none;
+display: block;
+" width="620">
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 15px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/k2tgsj?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Tranimal</u></a> [Maenad, Babu] [Animal] [8p-2a]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/pf0zfr?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Coketazo</u></a> [Morphina, Selene, Klké, Miss Ile, Tube] [Bossa] [10p-4a]</div><div><br></div><div>+&nbsp;<a target="_blank" rel="noopener noreferrer nofollow" href="https://www.eventbrite.com/e/vhs-activism-archive-presents-resist-remember-repeat-tickets-1990042412426#location">VHS Activism Archive presents: Resist! Remember! Repeat!</a> [A screening and discussion of AIDS activist video, institutional censorship and queer archival praxis.] [VHS Activism Archive] [7-9p]</div></div>
+</td>
+</tr>
+</tbody>
+</table><table class="container" style="margin-bottom: 5px;margin-top: 5px;" eo-block="image" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="hero" style="border-collapse: collapse; border-spacing: 0; margin: 0;padding: 0;" valign="top" align="center">
+<img src="https://gallery.eomail4.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2F019efa33-308b-77f0-a7d2-17edba2b37b2.png" style="
+width: 100%;
+max-width: 100%;
+object-fit: cover;
+padding: 0;
+outline: none;
+border: none;
+display: block;
+" width="620">
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 15px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/t4gabg?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Filthy Animal</u></a> [Varsha, Sevyn] [Animal] [7p-4a]</div><div><br>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://funqtion.app/e/6j0s1z?utm_source=tq&amp;utm_medium=email&amp;utm_campaign=tq-2026-06-25"><u>Genesis</u></a> [Daiyah, Anthorp, Alex Hell-n, R-dna, Lte] [Bossa] [10p-4a]&nbsp;</div><div><br></div><div>+ <a target="_blank" rel="noopener noreferrer nofollow" href="https://ra.co/events/2470712">Resist</a> [Sir Winston (live), Bearcat, Nigelthreetimes, Left On Pluto, Emma Offen] [Monarch] [9p-2a]</div></div>
+</td>
+</tr>
+</tbody>
+</table><table style="
+table-layout: fixed;
+width: 100%;
+" eo-block="divider" role="presentation" aria="hidden" width="100%" bgcolor="">
+<tbody>
+<tr>
+<td style="min-width:100%;padding-top:15px; padding-bottom:15px;">
+<table style="border-top: 1px rgb(220, 214, 209); border-collapse: collapse; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="center">
+<tbody>
+<tr>
+<td>
+<span></span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table><table class="container" style="margin-bottom: 5px;margin-top: 5px;" eo-block="image" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="hero" style="border-collapse: collapse; border-spacing: 0; margin: 0;padding: 0;" valign="top" align="center">
+<img src="https://gallery.eomail4.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2F019efa33-2920-7253-9f85-9bfac43b3c1b.png" style="
+width: 100%;
+max-width: 100%;
+object-fit: cover;
+padding: 0;
+outline: none;
+border: none;
+display: block;
+" width="620">
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 8px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div style="text-align: center;"><strong>+ Palestine +</strong></div><div style="text-align: center;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://firstfloor.substack.com/p/abadir-has-had-enough-of-futurism"><strong>ABADIR Has Had Enough of Futurism</strong></a><strong> [First Floor]</strong> "Sometime during the past decade, you started seeing all these clubs saying. “No racism. No homophobia. No transphobia. No touching people without their consent.” All the big no’s. They started talking about safe spaces, and I don’t want to exaggerate, but people sometimes die in these same clubs and nobody cares. You also had a club like ://about blank, which claimed to be against racism, but then it famously canceled a Room 4 Resistance event over the party’s stance against Israel.</div><div style="text-align: left;"><br></div><div style="text-align: left;"><em>There’s a so-called ceasefire in place in Gaza, Palestine has faded from the daily news and the KKR conversation has gone almost completely silent. Yet KKR, through its ownership of Superstruct, still owns 80 festivals around the globe, and a lot of artists—including, I’d imagine, some artists you may know or be a fan of—are taking these bookings. As an Arab artist who took a very public stand against this, how does it feel to watch how things have played out?</em></div><div style="text-align: left;"><br></div><div>It’s sad. There are ways to deal with the situation in a consistent way, but the problem is that the response hasn’t been consistent.</div><div><br></div><div>It was so weird to see the CEO of Sónar recently saying, “Boycotting culture won’t solve the problems of the Middle East.” It was so out of touch and ignorant. Even people in favor of the boycott would say, “Of course a boycott is not going to end the genocide.” There are other objectives, and they’re inspired by a model that succeeded in South Africa.</div><div><br></div><div><em>This is probably a big question, but what do you have against futurism?</em></div><div><br></div><div>If you have some sort of privilege, you can think about the future. But in the Arab region, we don’t have that luxury. We have to think more about the present moment and how to navigate it. For us, futurism is figuring out how to secure a living for the next five to ten years. Futurism has mostly come from Western academia.</div><div><br></div><div>I’ve been arguing against futurism for about four years now, and I also spent a lot of that time talking about dystopia. I published a very long essay last year called “<a target="_blank" rel="noopener noreferrer nofollow" href="https://dark.society.systems/contribution/aestheticsofdarknessinmusic/">The Aesthetics of Darkness in Electronic Music: Between Dystopian Lures and Futuristic Fixations.</a>”</div><div><br></div><div><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://networkcultures.org/longform/2026/06/02/grindrs-homonationalist-frontiers-part-1/"><strong>Grindr’s Homonationalist Frontiers: Part 1</strong></a> [This project aims to intervene in Grindr Studies by introducing theoretics of Zionism and homonationalism to contextualize harms on the Israeli-founded app. Part 1 thinks through desirability-based filtering on Grindr as an exercise in Zionist-homonationalist eugenics, focusing on “Right Now” as a key feature in the construction of the homosexual settler self. <a target="_blank" rel="noopener noreferrer nofollow" href="https://networkcultures.org/longform/2026/06/16/grindrs-homonationalist-frontiers-part-2/"><strong>Part 2</strong></a> explores Grindr’s distinct geolocative surveillance interface and its commitment to capital, through the lens of pinkwashed benevolent branding.]</div></div>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 8px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div style="text-align: center;"><strong>+ Gentrification +</strong></div><div style="text-align: center;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.raveforum.club/reviews/doomsday-preppers.html"><strong>Doomsday Preppers</strong></a><strong> [Raveforum]&nbsp;</strong>"I have been thinking about how we—the people around me—create what I consider real value, as opposed to financial capital, even as we live in a city that extracts and devalues our skills, hazes and degrades us, and is constantly trying to eject us and replace us with half-empty high-rise luxury condos and other worthless shit that we can’t afford and probably wouldn’t want even if we could. The shoreline should be public and free, but too often it is privatized and policed. Beach renegades like Scrap Time reclaim it, even just for a moment, though depending on the location they can come with the risk of federal charges and confiscated equipment, which had happened to friends who threw another renegade last summer."</div><div style="text-align: left;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://gothamist.com/news/jacob-riis-bathhouse-on-track-to-reopen-as-private-club-by-end-of-july"><strong>Jacob Riis Bathhouse on track to reopen as private club</strong></a><strong> [Gothamist]</strong> "It plans to open in phases, starting the final weekend of July, with a pool available only to members who pay an annual fee starting at $1,000.&nbsp;That space will operate alongside a public outdoor lounge area featuring mobile bars and a food truck. The developers also aim to open a 1,800-person concert venue and event space at the site this summer."</div><div style="text-align: left;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.them.us/story/knoxville-tennessee-gay-bar-closing"><strong>Knoxville, Tennessee Will Lose One of Its Last Two Gay Bars</strong></a> [Club XYZ will be closing after 22 years, citing rent increases and a dispute with a landlord] [them]</div></div>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 8px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div style="text-align: center;"><strong>+ Enshittification +</strong></div><div style="text-align: center;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://ra.co/news/85456"><strong>A new tool allows artists to check whether their tracks are used in AI</strong></a><strong> [RA]&nbsp;</strong>"AI Watchdog was established in 2025 to highlight the millions of books, research articles and video media that has been used to train AI products. It's now been expanded to include music datasets. The tool isn't comprehensive. It only draws upon four datasets found in research papers and AI data-sharing sites."</div><div style="text-align: left;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.latimes.com/business/story/2026-06-19/grindr-ceo-wants-his-dating-app-to-become-gay-culture-hub"><strong>Grindr CEO wants his dating app to become a gay culture hub</strong></a><strong> [LA Times]</strong> "Like other dating apps, Grindr is experimenting with AI and deeper personalization to better engage its users. The company has introduced a paid tier plan for advanced AI features."</div><div style="text-align: left;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://sf.gazetteer.co/privacy-rights-advocates-push-back-against-data-collection-devices-in-castro-bars"><strong>Privacy rights advocates push back against data collection devices in Castro bars</strong></a><strong> [SF Gazetteer]</strong> "Much of the outrage among the Castro community has centered on Patronscan’s collection of biometric data like photos and facial structure details, which have been used by other private surveillance operations to track and control the movements of individuals in retail and <a target="_blank" rel="noopener noreferrer nofollow" href="https://web.archive.org/web/20260420061843/https://www.wired.com/story/madison-square-garden-jim-dolan-surveillance-machine/">entertainment venues</a>."</div></div>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 8px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div style="text-align: center;"><strong>+ Healthcare +</strong></div><div style="text-align: center;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.lgbtqnation.com/2026/06/lgbtq-activists-demand-nyc-pride-ban-hospitals-that-ended-trans-youth-care/"><strong>LGBTQ+ activists demand NYC Pride ban hospitals that ended trans youth care</strong></a><strong> [LGBTQ Nation] </strong>"We call on NYC Pride to prohibit any hospital system that has ended, restricted, or suspended gender-affirming care for transgender youth from marching in the 2026 NYC Pride March and festival, and any future prides, unless and until they restore that care and publicly commit to protecting trans youth and their families,” <a target="_blank" rel="noopener noreferrer nofollow" href="https://genderlib.org/statements/open-letter-to-nyc-pride">GLM’s letter</a> reads.&nbsp;Prominent 2026 grand marshals, including Bowen Yang and Dominique Jackson have signed the letter, as well as former grand marshals like GLM co-founder Raquel Willis, TS Madison, and Jazz Jennings. They’re joined by 33 parents and family members of trans children and a wealth of LGBTQ+ organizations and non-profits."</div><div style="text-align: left;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.them.us/story/tmvii-shigella-queer-men"><strong>Shigella and TMVII: What You Need to Know to Prevent Emerging STIs This Summer</strong></a><strong> [them]</strong> "TMVII is a fungal infection that can spread through close physical contact, including sex, and has been disproportionately reported among queer men. Sharing towels, clothing, bedding, or sex gear with someone who has TMVII can all be pathways for it to spread.&nbsp; Shigella is a bacterial infection that affects the gut and can cause diarrhea, fever, and cramps. A treatment-resistant strain has recently cropped up in the U.S. among men who have sex with men. Experts say this is in part due to sex that involves the mouth and the anus, as this can be a pathway for the infection to spread."</div></div>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 8px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div style="text-align: center;"><strong>+ Sex +</strong></div><div style="text-align: left;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://gaycitynews.com/new-frontiers-folsom-street-east-and-beyond/"><strong>New frontiers at Folsom Street East and beyond</strong></a><strong> [Gay City News] </strong>"As evident with headlines like&nbsp; “<a target="_blank" rel="noopener noreferrer nofollow" href="https://1883magazine.com/everyones-a-little-kinky-now-how-fetish-culture-went-mainstream/">How Fetish Culture Went Mainstream</a>” and “<a target="_blank" rel="noopener noreferrer nofollow" href="https://www.psychologytoday.com/us/blog/the-myths-of-sex/202409/why-gen-z-is-the-kinkiest-generation-yet">Gen Z Is the Kinkiest Generation Yet</a>,” more and more people are embracing the kink lifestyle. [...]&nbsp;FSE often unfairly gets compared to&nbsp; San Francisco’s Folsom Street Fair, which began in 1984 and is considered to be the largest leather event in the country, known for its anything goes approach where public nudity and sexual acts are boldly on display. New York State law sadly prohibits both of those activities."</div></div>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 8px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div style="text-align: center;"><strong>+ Sports +</strong></div><div style="text-align: left;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://ravenewworld.substack.com/p/knicks-in-five"><strong>Knicks&nbsp;In&nbsp;Five</strong></a><strong> [Rave New World]&nbsp;</strong>"Has New York, a city ruled by fashion girls and fabulous gays, ever cared this much about jocks?&nbsp;Something’s in the air lately with sports, do you feel this? My theory is that the spirit of the game has subbed in for the wider gentility we are missing, sportsmanship standing in for the sense of virtue, unity, and discipline that’s lacking on the world stage. [...] In these hopelessly polarized times, cheering for a side evokes a feeling of communal belonging that’s increasingly hard to find."</div></div>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 8px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div style="text-align: center;"><strong>+ Around The World +</strong></div><div style="text-align: left;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://ra.co/news/85460"><strong>Amsterdam club TILLATEC announces closure</strong></a><strong> [RA] </strong>"This is not just a goodbye to a building," the <a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DZxAFjYNOgF/">post</a> read. "It's a love letter to the people who made it mean something."&nbsp;TILLATEC launched in April 2024, taking over the space that previously housed the legendary <a target="_blank" rel="noopener noreferrer nofollow" href="https://ra.co/news/80048">De School</a>."</div><div style="text-align: left;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://mixmag.net/read/new-nightclub-to-take-over-former-home-of-sohos-g-a-y-news"><strong>New nightclub takes over former home of Soho's G-A-Y</strong></a><strong> [Mixmag]</strong> "Coven describes itself as&nbsp;a "queer cultural space where music, art, nightlife and community collide."</div><div style="text-align: left;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://djmag.com/news/spiral-tribe-exhibition-documenting-90s-free-party-culture-coming-london"><strong>Spiral Tribe exhibition documenting ’90s free party culture is coming to London</strong></a><strong> [DJ Mag]</strong></div><div style="text-align: left;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.dazeddigital.com/music/article/70327/1/techno-is-dyeing-in-berlin-nightlife-trend-upbeat"><strong>Less cool, less cold: A new kind of nightlife is taking over Berlin</strong></a><strong> [Dazed]</strong> "Kindness is the new coolness." "In times where extreme right-wing politicians are known for their arrogance, and when we are surrounded by growing economic problems and new wars, it’s not the time to be cool and cold: it’s the time to be open and friendly."</div><div style="text-align: left;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://thecoldmagazine.co.uk/whole-festival/?v=01c054100e77"><strong>At WHOLE Festival, Queer Collectives From Around the World Sweat Together</strong></a><strong> [Cold]</strong> "One of the best kept upgrades this year is a double Arena darkroom, so there’s way more space to move and breathe in there. There are also rumours of an extra douching station coming in."</div><div style="text-align: left;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://thecoldmagazine.substack.com/p/anti-fashion-show-at-hiedrah-buenos"><strong>Anti-Fashion Show at HiedraH: Buenos Aires’ Defiant Queer Rave</strong></a><strong> [Cold]</strong> "Javier Milei is stripping workers of rights, slashing welfare and abolishing trans employment quotas. With that backdrop, a defiant anti-fashion show found its natural setting not in the capital’s fashion week, but at the queer underground rave HiedraH.&nbsp;For over a decade, record label and queer rave HiedraH has been a cornerstone of Buenos Aires’ LGBTQ+ nightlife."</div><div style="text-align: left;"><br></div><div style="text-align: left;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://thecoldmagazine.substack.com/p/bangkoks-underground-at-play-four"><strong>Bangkok's Underground at Play: Four Years of Kangkao</strong></a><strong> [Cold]</strong> "The population of Bangkok is growing by 150,000 people annually, a rate nearly twice that of London. This, combined with the low cost of living and an attitude of resistance in the face of gentrification, has created an incubator for DIY music, art and events in the heart of Southeast Asia."</div></div>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 8px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div style="text-align: center;"><strong>+ History +</strong></div><div><br></div><div><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://mixmag.net/read/rave-preservation-project-launches-new-directory-tool-for-expansive-archive-news"><strong>Rave Preservation Project launches directory tool for archival artefacts</strong></a> [The <a target="_blank" rel="noopener noreferrer nofollow" href="https://www.ravepreservationproject.com/">online archive of rave memorabilia</a> features around 40,000 items, with a backlog of around 250,000 artefacts to be added] [Mixmag]</div><div><br></div><div><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DZ3rUUgFm2v/?img_index=1"><strong>GAY POWER was one of the earliest &amp; most ambitious newspapers to emerge from the explosion of LGBTQ+ activism that followed the Stonewall uprising.</strong></a> Launched in 1969, it proclaimed itself “New York’s 1st Homosexual Newspaper” &amp; embraced a new, unapologetic language of liberation.&nbsp;The paper covered local activism, nightlife, arts, &amp; community organizing while helping connect readers to a rapidly expanding network of LGBTQ+ organizations in NYC &amp; beyond.&nbsp; [<a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/queer_happened_here/">Queer Happened Here</a>]</div><div><br></div><div><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DZlmUvKlrTC/?img_index=1"><strong>Part restaurant, part cabaret, &amp; part BDSM stage set, La Nouvelle Justine</strong></a> was one of NYC’s strangest late-1990s queer nightlife hybrids,&nbsp; opened in 1997 by the team behind the drag restaurant Lucky Cheng’s.&nbsp;It offered dinner with fetish staff, live shows, public spanking, bondage scenes, &amp; theme nights that blurred restaurant service, performance art, sex-club aesthetics, &amp; queer cabaret. [QHH]</div><div><br></div><div><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DZfYPxmFjny/?img_index=1"><strong>Fat Boy opened in 1997, notably a restaurant, lounge, &amp; dance venue all wrapped in one</strong></a>, reflecting the hybrid club-restaurant model that became increasingly popular in the Meatpacking District during the decade.&nbsp;Historical accounts identify Fat Boy as a gathering place for Latino gay men in particular, as it became home to the weekly party Scandalo!&nbsp; [QHH]</div></div>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 8px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div style="text-align: center;"><strong>+ R.I.P. +</strong></div><div><br></div><div><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DZ4j17hFpvr/?img_index=1"><strong>R.I.P. Ren T. Osborne (aka Ren Xtravaganza)</strong></a><strong> [</strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/queer_happened_here/"><strong>QHH</strong></a><strong>]</strong> "Known for his razor-sharp voguing style, impeccable dance-floor etiquette, &amp; unmistakable personality, Ren earned nicknames including “Mother Shady Elbows &amp; Shoulders,” a reference to both his ballroom prowess &amp; his legendary ability to command space on a crowded dance floor. He's remembered as a fierce competitor, an avid volleyball player, an uncompromising guardian of club culture, &amp; a fixture at countless LGBTQ+ venues, parties, &amp; dance floors."</div><div><br></div><div><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DZxUgw8lgwI/?img_index=1"><strong>R.I.P. James Barker (aka DJ Chaotic)</strong></a><strong> [QHH]</strong> "Throughout the 2010s &amp; 2020s, Barker played at many of the city's most prominent queer venues &amp; events. He was the resident DJ for Poppers, the long-running queer dance party founded at C'mon Everybody, &amp; was a familiar presence at numerous other venues.&nbsp;He was known for his warmth &amp; willingness to support community events, fundraisers, &amp; emerging queer artists."</div><div><br></div><div><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DZrtkyKlq8P/?img_index=1"><strong>R.I.P. Brenda Holder. [QHH]</strong></a> "Brenda Holder, known throughout New York's ballroom &amp; drag communities as Brenda Milan &amp; later Brenda Continental Milan &amp; Brenda Continental Milan Soulja, was a beloved Guyanese-born transgender performer, ballroom participant, pageant competitor, military veteran, &amp; community activist whose life intersected with NYC’s Black &amp; Latinx LGBTQ+ communities for more than forty years."</div><div><br></div><div><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DZe52kvlhIQ/?img_index=1"><strong>R.I.P. William Coupon</strong></a><strong> [QHH]</strong> "Photographer William Coupon’s (1952–2026) body of work occupies an important place in the visual history of queer New York. Emerging from downtown Manhattan in the late 1970s, he documented many of the people, spaces, &amp; subcultures that shaped LGBTQ+ life during a transformative period in the city's history."</div><div><br></div><div><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DZbQL-2Fntb/?img_index=1"><strong>R.I.P. Duane Michals</strong></a><strong> [QHH]</strong> "Duane Michals was one of the more influential &amp; openly gay photographers of the 20th century, a pioneering artist whose work challenged the conventions of photography while placing desire, intimacy, identity, &amp; mortality at the center of the medium."</div></div>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding: 8px 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div style="text-align: center;"><strong>+ </strong><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.instagram.com/p/DZ46NSpEdlm/?img_index=1"><strong>Justin Covington's Jokes 4 U: NYC Pride Edition</strong></a><strong> +</strong></div><div><br></div><div><strong>+ "Gays will spend thousands of dollars just to take off their shirts in front of new gays."</strong></div><div><br></div><div><strong>+ "When a Pride party advertises being 12 hours it feels more like a threat than anything."</strong></div><div><br></div><div><strong>+ "It's only a circuit party if it's from the circuit region of France, otherwise it's a sparkling rave."</strong></div><div><br></div><div><strong>+ "Can't believe I ran into my ex at the Running Into My Ex factory."</strong></div><div><br></div><div><strong>+ "Sorry kid, but you just don't got the right mix of neurodivergence and sex appeal to make it in nightlife."</strong></div></div>
+</td>
+</tr>
+</tbody>
+</table><table style="
+table-layout: fixed;
+width: 100%;
+" eo-block="divider" role="presentation" aria="hidden" width="100%" bgcolor="">
+<tbody>
+<tr>
+<td style="min-width:100%;padding-top:15px; padding-bottom:15px;">
+<table style="border-top: 1px rgb(220, 214, 209); border-collapse: collapse; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="center">
+<tbody>
+<tr>
+<td>
+<span></span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table><table class="container" style="margin-bottom: 5px;margin-top: 5px;" eo-block="image" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="hero" style="border-collapse: collapse; border-spacing: 0; margin: 0;padding: 0;" valign="top" align="center">
+<img src="https://gallery.eomail4.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2F019efa33-2cc3-74d2-9e42-1a4249ded0e9.png" style="
+width: 100%;
+max-width: 100%;
+object-fit: cover;
+padding: 0;
+outline: none;
+border: none;
+display: block;
+" width="620">
+</td>
+</tr>
+</tbody>
+</table><table style="
+table-layout: fixed;
+width: 100%;
+" eo-block="divider" role="presentation" aria="hidden" width="100%" bgcolor="">
+<tbody>
+<tr>
+<td style="min-width: 100%; padding-top: 10px; padding-bottom: 0px;">
+<table style="border-top: 1px rgb(220, 214, 209); border-collapse: collapse; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="center">
+<tbody>
+<tr>
+<td>
+<span></span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table><table class="container" style="margin-bottom: 5px;margin-top: 5px;" eo-block="image" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="hero" style="border-collapse: collapse; border-spacing: 0px; margin: 0px; padding: 0px;" valign="top" align="center">
+<a href="https://www.instagram.com/p/DZ46NSpEdlm/?img_index=7" target="_blank"><img src="https://gallery.eomail4.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2F019f0157-dd96-7806-abb5-05fad2b7b601.jpeg" style="
+width: 100%;
+max-width: 100%;
+object-fit: cover;
+padding: 0;
+outline: none;
+border: none;
+display: block;
+" width="620"></a>
+</td>
+</tr>
+</tbody>
+</table><table style="
+table-layout: fixed;
+width: 100%;
+" eo-block="divider" role="presentation" aria="hidden" width="100%" bgcolor="">
+<tbody>
+<tr>
+<td style="min-width: 100%; padding-top: 75px; padding-bottom: 0px;">
+<table style="border-top: 1px rgb(220, 214, 209); border-collapse: collapse; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="center">
+<tbody>
+<tr>
+<td>
+<span></span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table><table class="container" style="margin-bottom: 5px;margin-top: 5px;" eo-block="image" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="hero" style="border-collapse: collapse; border-spacing: 0; margin: 0;padding: 0;" valign="top" align="center">
+<img src="https://gallery.eomail4.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2F019efa33-291e-7579-8017-5c2d71d3f762.png" style="
+width: 100%;
+max-width: 100%;
+object-fit: cover;
+padding: 0;
+outline: none;
+border: none;
+display: block;
+" width="620">
+</td>
+</tr>
+</tbody>
+</table><table style="
+table-layout: fixed;
+width: 100%;
+" eo-block="divider" role="presentation" aria="hidden" width="100%" bgcolor="">
+<tbody>
+<tr>
+<td style="min-width: 100%; padding-top: 75px; padding-bottom: 0px;">
+<table style="border-top: 1px rgb(220, 214, 209); border-collapse: collapse; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="center">
+<tbody>
+<tr>
+<td>
+<span></span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding-top: 0px; padding-bottom: 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div style="text-align: center;"><a target="_blank" rel="noopener noreferrer" href="http://technoqueers.com/"><span class="eo-link-wrapper" style="font-size: 12px;">+ Subscribe +</span></a></div></div>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding-top: 0px; padding-bottom: 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div style="text-align: center;"><a target="_blank" rel="noopener noreferrer nofollow" href="{{UnsubscribeURL}}"><span style="font-size: 12px;">+ Unsubscribe&nbsp;+</span></a></div></div>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding-top: 0px; padding-bottom: 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div style="text-align: center;"><a target="_blank" rel="noopener noreferrer" href="https://opencollective.com/technoqueers"><span style="font-size: 12px;">+ Donate&nbsp;+</span></a></div></div>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding-top: 0px; padding-bottom: 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div style="text-align: center;"><a target="_blank" rel="noopener noreferrer" href="https://www.wearecomposite.co/"><span class="eo-link-wrapper" style="font-size: 12px;">Designed by Composite</span></a></div></div>
+</td>
+</tr>
+</tbody>
+</table><table role="presentation" eo-block="text" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="" align="center">
+<tbody>
+<tr>
+<td class="container" style="padding-top: 0px; padding-bottom: 0px;">
+<div class="text-block fr-inner" style="line-height: 1;"><div style="text-align: center;"><span style="font-size: 12px;">{{SenderInfo}}</span></div></div>
+</td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+</body></html>
