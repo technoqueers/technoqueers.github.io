@@ -1,0 +1,39 @@
+name: Sync newsletter
+
+on:
+  schedule:
+    # Fridays at 12:00 (EDT / UTC-4). Shifts to 11:00 local during EST (UTC-5).
+    - cron: '0 16 * * 5'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch latest newsletter issue
+        env:
+          EMAILOCTOPUS_API_KEY: ${{ secrets.EMAILOCTOPUS_API_KEY }}
+        run: node scripts/sync-newsletter.mjs
+
+      - name: Commit and push if changed
+        run: |
+          git add emails/
+          if git diff --cached --quiet; then
+            echo "No new newsletter issue."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "Add latest newsletter issue"
+          git push
