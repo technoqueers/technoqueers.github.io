@@ -52,9 +52,16 @@ export async function fetchAllSentCampaigns() {
     .sort((a, b) => new Date(a.sent_at) - new Date(b.sent_at));
 }
 
+// Unlike fetchAllSentCampaigns, this only looks at the first page — the API
+// returns campaigns newest-first, and the archive already has 470+ sent
+// campaigns, so paginating through everything just to find the latest one
+// would mean an ever-growing number of requests on every weekly run.
 export async function fetchLatestSentCampaign() {
-  const all = await fetchAllSentCampaigns();
-  return all[all.length - 1] || null;
+  const list = await eoFetch('/campaigns?limit=20');
+  const sent = (list.data || [])
+    .filter((c) => c.status?.toUpperCase() === 'SENT' && c.sent_at)
+    .sort((a, b) => new Date(b.sent_at) - new Date(a.sent_at));
+  return sent[0] || null;
 }
 
 export function isoWeek(date) {
