@@ -7,7 +7,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { fetchAllSentCampaigns, buildArchiveItem } from './lib/eo.mjs';
+import { fetchAllSentCampaigns, buildArchiveItem, eoFetch } from './lib/eo.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -18,7 +18,18 @@ async function main() {
   const data = JSON.parse(await readFile(DATA_JSON, 'utf-8'));
   const knownIds = new Set(data.map((entry) => entry.id).filter(Boolean));
 
+  const rawPage = await eoFetch('/campaigns?limit=100');
+  console.log(`Raw /campaigns page: ${(rawPage.data || []).length} item(s), paging=${JSON.stringify(rawPage.paging || {})}`);
+  for (const c of rawPage.data || []) {
+    console.log(`  raw: ${c.id} | status=${c.status} | sent_at=${c.sent_at} | ${c.subject || c.name}`);
+  }
+
   const campaigns = await fetchAllSentCampaigns();
+  console.log(`EmailOctopus reports ${campaigns.length} sent campaign(s) total.`);
+  for (const c of campaigns) {
+    console.log(`  - ${c.id} | ${c.sent_at} | ${c.subject || c.name}`);
+  }
+
   const missing = campaigns.filter((c) => !knownIds.has(c.id));
 
   if (missing.length === 0) {
