@@ -19,6 +19,8 @@ async function main() {
   const knownIds = new Set(data.map((entry) => entry.id).filter(Boolean));
 
   const campaigns = await fetchAllSentCampaigns();
+  console.log(`EmailOctopus reports ${campaigns.length} sent campaign(s) total.`);
+
   const missing = campaigns.filter((c) => !knownIds.has(c.id));
 
   if (missing.length === 0) {
