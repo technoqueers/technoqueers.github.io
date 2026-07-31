@@ -12,6 +12,26 @@ export const MONTH_NAMES = [
   'July', 'August', 'September', 'October', 'November', 'December',
 ];
 
+// Newsletters are sent from the US Eastern timezone. A late-evening Thursday
+// send can land after midnight UTC, so the archive date must be computed in
+// that local timezone rather than via a raw UTC slice — otherwise it gets
+// filed under Friday.
+const NEWSLETTER_TZ = 'America/New_York';
+
+// Returns the calendar date (as a UTC midnight Date) that `date` falls on
+// when viewed in `timeZone`.
+export function localCalendarDate(date, timeZone = NEWSLETTER_TZ) {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-CA', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(date).map((p) => [p.type, p.value]),
+  );
+  return new Date(Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day)));
+}
+
 function apiKey() {
   const key = process.env.EMAILOCTOPUS_API_KEY;
   if (!key) {
@@ -107,7 +127,8 @@ export async function buildArchiveItem(campaignSummary) {
   }
 
   const sentAt = new Date(full.sent_at);
-  const date = sentAt.toISOString().slice(0, 10);
+  const localSentAt = localCalendarDate(sentAt);
+  const date = localSentAt.toISOString().slice(0, 10);
   const subject = full.subject || full.name || 'untitled';
   const file = `${full.id}_${slugify(subject)}.html`;
   const plainText = full.content?.plain_text || stripTags(html);
@@ -117,10 +138,10 @@ export async function buildArchiveItem(campaignSummary) {
     title: subject,
     subject,
     date,
-    year: sentAt.getUTCFullYear(),
-    month: sentAt.getUTCMonth() + 1,
-    monthName: MONTH_NAMES[sentAt.getUTCMonth()],
-    week: isoWeek(sentAt),
+    year: localSentAt.getUTCFullYear(),
+    month: localSentAt.getUTCMonth() + 1,
+    monthName: MONTH_NAMES[localSentAt.getUTCMonth()],
+    week: isoWeek(localSentAt),
     file,
     excerpt,
     id: full.id,
