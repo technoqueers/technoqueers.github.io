@@ -71,8 +71,10 @@
     }
 
     .search-input {
+      display: block;
       width: 100%;
       max-width: 480px;
+      margin: 0 auto;
       height: 40px;
       padding: 0 20px;
       border: 1px solid #000;
@@ -362,10 +364,10 @@
 
     function filtered() {
       if (query) {
+        var words = query.split(/\s+/).filter(Boolean);
         return all.filter(function (c) {
-          return c.title.toLowerCase().indexOf(query) !== -1 ||
-                 c.subject.toLowerCase().indexOf(query) !== -1 ||
-                 (c.excerpt && c.excerpt.toLowerCase().indexOf(query) !== -1);
+          var haystack = (c.title + ' ' + c.subject + ' ' + (c.excerpt || '')).toLowerCase();
+          return words.every(function (w) { return haystack.indexOf(w) !== -1; });
         });
       }
       return all.filter(function (c) {

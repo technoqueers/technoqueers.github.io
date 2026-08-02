@@ -104,7 +104,15 @@ export function stripTags(html) {
     .replace(/<style[\s\S]*?<\/style>/gi, ' ')
     .replace(/<script[\s\S]*?<\/script>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
+    // Unrendered preheader merge-tag/template syntax (e.g. EmailOctopus's
+    // {{PreviewText}} / {% if PreviewText %}...{% endif %}, or MailChimp's
+    // *|MC_PREVIEW_TEXT|*) sits at the very top of the body — if left in,
+    // it becomes the entire excerpt instead of any real content.
+    .replace(/\{%[\s\S]*?%\}/g, ' ')
+    .replace(/\{\{[\s\S]*?\}\}/g, ' ')
+    .replace(/\*\|[\s\S]*?\|\*/g, ' ')
     .replace(/&nbsp;/g, ' ')
+    .replace(/‌/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 }
