@@ -235,6 +235,20 @@
 
     .email-title:hover { color: #000; }
 
+    .email-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .email-snippet {
+      font-family: Univers, sans-serif;
+      font-size: 14px;
+      line-height: 19px;
+      color: #e8e8e8;
+      margin-top: 2px;
+      overflow-wrap: anywhere;
+    }
+
     .list-empty {
       font-family: Univers, sans-serif;
       font-weight: 700;
@@ -318,6 +332,8 @@
     var activeYear = null;
     var activeMonth = null;
     var query = '';
+    var searchIndex = null;
+    var searchState = 'idle'; // idle | loading | ready | failed
 
     fetch('emails/data.json')
       .then(function (r) { return r.json(); })
@@ -332,11 +348,86 @@
       if (query) {
         activeYear = null;
         activeMonth = null;
-      } else if (!activeYear) {
+        loadSearchIndex();
+      } else if (!activeYear && all.length) {
         activeYear = all[0].year;
       }
       render();
     });
+
+    /* ── Full-text search ── */
+
+    // Fetched on first search, since it's far bigger than data.json. Until it
+    // arrives (or if it fails) search falls back to titles and excerpts.
+    function loadSearchIndex() {
+      if (searchState === 'loading' || searchState === 'ready') return;
+      searchState = 'loading';
+      fetch('emails/search.json')
+        .then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(function (index) {
+          searchIndex = index;
+          searchState = 'ready';
+          render();
+        })
+        .catch(function (err) {
+          console.error('Could not load search index', err);
+          searchState = 'failed';
+          render();
+        });
+    }
+
+    // Lowercases, strips accents and turns punctuation into spaces, so "vos"
+    // finds "Vôs" and "n'" finds "N’". Keeps the length unchanged so a match
+    // position also points at the right place in the original text.
+    function fold(s) {
+      return s.toLowerCase().replace(/[^a-z0-9 ]/g, function (ch) {
+        var base = ch.normalize('NFD').charAt(0);
+        return /[\p{L}\p{N}]/u.test(base) ? base : ' ';
+      });
+    }
+
+    function queryWords() {
+      return fold(query).split(/\s+/).filter(Boolean);
+    }
+
+    function bodyText(c) {
+      return searchIndex ? (searchIndex[c.file] || '') : (c.excerpt || '');
+    }
+
+    function foldedBody(c) {
+      if (!searchIndex) return fold(bodyText(c));
+      if (c.foldedBody === undefined) c.foldedBody = fold(bodyText(c));
+      return c.foldedBody;
+    }
+
+    // A slice of the issue around the match; every issue is titled "the guide
+    // v.N", so the title alone can't show why it was found.
+    function snippet(c, words) {
+      var body = foldedBody(c);
+      var length = words.join(' ').length;
+      var pos = body.indexOf(words.join(' '));
+      for (var i = 0; pos === -1 && i < words.length; i++) {
+        length = words[i].length;
+        pos = body.indexOf(words[i]);
+      }
+      if (pos === -1) return '';
+
+      var text = bodyText(c);
+      var start = Math.max(0, pos - 70);
+      var end = Math.min(text.length, pos + length + 110);
+      if (start > 0) {
+        var wordStart = text.indexOf(' ', start);
+        if (wordStart !== -1 && wordStart < pos) start = wordStart + 1;
+      }
+      if (end < text.length) {
+        var wordEnd = text.lastIndexOf(' ', end);
+        if (wordEnd > pos + length) end = wordEnd;
+      }
+      return (start > 0 ? '… ' : '') + text.slice(start, end) + (end < text.length ? ' …' : '');
+    }
 
     /* ── Data helpers ── */
 
@@ -364,10 +455,14 @@
 
     function filtered() {
       if (query) {
-        var words = query.split(/\s+/).filter(Boolean);
+        var words = queryWords();
+        if (!words.length) return [];
         return all.filter(function (c) {
-          var haystack = (c.title + ' ' + c.subject + ' ' + (c.excerpt || '')).toLowerCase();
-          return words.every(function (w) { return haystack.indexOf(w) !== -1; });
+          var meta = fold(c.title + ' ' + c.subject);
+          var body = foldedBody(c);
+          return words.every(function (w) {
+            return meta.indexOf(w) !== -1 || body.indexOf(w) !== -1;
+          });
         });
       }
       return all.filter(function (c) {
@@ -434,16 +529,23 @@
       var items = filtered();
 
       if (!items.length) {
-        list.innerHTML = '<div class="list-empty">no results</div>';
+        list.innerHTML = '<div class="list-empty">' +
+                         (query && searchState === 'loading' ? 'searching…' :
+                          query && searchState === 'failed' ? 'no results in titles — full text failed to load' :
+                          'no results') +
+                         '</div>';
         return;
       }
 
       var html = '';
 
       if (query) {
+        var words = queryWords();
+        var note = searchState === 'loading' ? ' — searching full text…' :
+                   searchState === 'failed' ? ' — titles only, full text failed to load' : '';
         html += '<div class="list-status">' + items.length +
-                ' result' + (items.length !== 1 ? 's' : '') + '</div>';
-        items.forEach(function (c) { html += emailRow(c); });
+                ' result' + (items.length !== 1 ? 's' : '') + note + '</div>';
+        items.forEach(function (c) { html += emailRow(c, snippet(c, words)); });
         list.innerHTML = html;
         return;
       }
@@ -483,11 +585,14 @@
       list.innerHTML = html;
     }
 
-    function emailRow(c) {
+    function emailRow(c, excerpt) {
       return '<div class="email-item">' +
              '<span class="email-date">' + c.date + '</span>' +
+             '<div class="email-body">' +
              '<a href="emails/' + esc(c.file) + '" class="email-title" target="_blank" rel="noopener">' +
              esc(c.title) + '</a>' +
+             (excerpt ? '<div class="email-snippet">' + esc(excerpt) + '</div>' : '') +
+             '</div>' +
              '</div>';
     }
 

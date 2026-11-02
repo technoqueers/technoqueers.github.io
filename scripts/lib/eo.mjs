@@ -1,5 +1,8 @@
 // Shared EmailOctopus helpers used by sync-newsletter.mjs and backfill-newsletters.mjs.
 
+import { readFile, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+
 export const API_BASE = process.env.EMAILOCTOPUS_API_BASE || 'https://api.emailoctopus.com';
 
 export const NAV_HTML = `\t\t<div id="archive-nav" style="background-color:#6e6e6e;padding:14px 20px;font-family:'Courier New',monospace;">
@@ -115,6 +118,32 @@ export function stripTags(html) {
     .replace(/‌/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+// The full readable text of an archived issue, for archive.html's search.
+// Drops only what isn't part of the issue: comments (including Outlook-only
+// conditional duplicates), <head>, and the nav bar injectNav adds to every page.
+export function searchText(html) {
+  const body = html
+    .replace(/<!--[\s\S]*?-->/g, ' ')
+    .replace(/<head[\s>][\s\S]*?<\/head>/i, ' ')
+    .replace(/<div id="archive-nav"[\s\S]*?<\/div>/i, ' ');
+  return stripTags(body)
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&');
+}
+
+// Regenerates emails/search.json ({ file: text }) from the issues on disk.
+// It's separate from data.json so the archive page only downloads it once
+// someone actually searches.
+export async function writeSearchIndex(entries, emailsDir) {
+  const index = {};
+  for (const { file } of entries) {
+    index[file] = searchText(await readFile(path.join(emailsDir, file), 'utf-8'));
+  }
+  await writeFile(path.join(emailsDir, 'search.json'), JSON.stringify(index), 'utf-8');
 }
 
 export function injectNav(html) {
