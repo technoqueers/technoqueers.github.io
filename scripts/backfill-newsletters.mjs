@@ -2,13 +2,17 @@
 // One-off/occasional backfill: pulls every sent EmailOctopus campaign and adds
 // any not already in emails/data.json (matched by campaign id), each as its
 // own HTML file, then re-sorts data.json newest-first by date.
-// Requires EMAILOCTOPUS_API_KEY in the environment.
+// Requires EMAILOCTOPUS_API_KEY in the environment. With the R2_* variables
+// (see lib/r2.mjs) set, it also backs the issue's images up to R2 and points
+// the issue at the copies.
 
 import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { fetchAllSentCampaigns, buildArchiveItem, writeSearchIndex } from './lib/eo.mjs';
 import { writeMemeIndex } from './lib/memes.mjs';
+import { imageMirror } from './lib/r2.mjs';
+import { loadManifest, saveManifest, mirrorIssueHtml } from './lib/images.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -31,10 +35,14 @@ async function main() {
 
   console.log(`Found ${missing.length} campaign(s) not yet in the archive.`);
 
+  const r2 = imageMirror();
+  const manifest = await loadManifest(EMAILS_DIR);
+
   const added = [];
   for (const summary of missing) {
     const { entry, file, html } = await buildArchiveItem(summary);
-    await writeFile(path.join(EMAILS_DIR, file), html, 'utf-8');
+    await writeFile(path.join(EMAILS_DIR, file), await mirrorIssueHtml(html, { manifest, r2 }), 'utf-8');
+    if (r2) await saveManifest(manifest, EMAILS_DIR);
     data.push(entry);
     added.push(entry);
     console.log(`  + ${entry.subject} (${entry.date}) -> emails/${file}`);
