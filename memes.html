@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Technoqueers — Memes</title>
+  <meta content="Every meme the Technoqueers guide has signed off with." name="description">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <link href="css/normalize.css" rel="stylesheet" type="text/css">
+  <link href="css/technoqueers.webflow.css" rel="stylesheet" type="text/css">
+  <link href="images/favicon.png" rel="shortcut icon" type="image/x-icon">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background-color: #6e6e6e;
+      margin: 0;
+      padding: 0;
+      font-family: Univers, sans-serif;
+      color: #fff;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .memes-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* ── Header (matches archive.html) ── */
+    .memes-header {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .header-link,
+    .header-label,
+    .header-sep {
+      font-weight: 700;
+      font-size: 17px;
+      line-height: 17px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .header-link { color: #fff; }
+    .header-link:hover { color: #000; }
+    .header-sep { color: rgba(255,255,255,0.35); }
+    .header-label { color: rgba(255,255,255,0.5); }
+
+    .header-shuffle {
+      margin-left: auto;
+      font-family: Univers, sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 13px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #000;
+      background: transparent;
+      border: 1px solid #000;
+      border-radius: 20px;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+
+    .header-shuffle:hover { background: #fff; border-color: #fff; }
+    .header-shuffle[aria-pressed="true"] { background: #fff; border-color: #fff; }
+
+    .memes-status {
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 16px;
+    }
+
+    /* ── Grid ── */
+    /* Masonry: render() deals cards across .memes-col columns left to right,
+       so newest-first reads across rows rather than down each column. */
+    .memes-grid {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .memes-col {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .meme {
+      margin: 0 0 20px;
+    }
+
+    .meme-img-link { display: block; }
+
+    .meme img {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-height: 80px;
+      background: rgba(0,0,0,0.12);
+    }
+
+    .meme figcaption {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 6px;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .meme-issue { color: #fff; }
+    .meme-issue:hover { color: #000; }
+    .meme-date { color: rgba(255,255,255,0.45); white-space: nowrap; }
+
+    .memes-empty {
+      font-weight: 700;
+      font-size: 17px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      padding: 20px 0;
+    }
+
+    @media screen and (max-width: 767px) {
+      .memes-wrap { padding: 24px 16px 60px; }
+      .memes-grid { gap: 12px; }
+      .meme { margin-bottom: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="memes-wrap">
+    <div class="memes-header">
+      <a href="/" class="header-link">technoqueers</a>
+      <span class="header-sep">/</span>
+      <a href="archive.html" class="header-link">archive</a>
+      <span class="header-sep">/</span>
+      <span class="header-label">memes</span>
+      <button type="button" class="header-shuffle" id="shuffle" aria-pressed="false">shuffle</button>
+    </div>
+
+    <div class="memes-status" id="status"></div>
+    <div class="memes-grid" id="grid" aria-live="polite"></div>
+  </div>
+
+  <script>
+  (function () {
+    var memes = []; // flattened, newest first
+    var order = memes;
+    var shuffled = false;
+    var columns = 0;
+
+    fetch('emails/memes.json')
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (issues) {
+        issues.forEach(function (issue) {
+          issue.memes.forEach(function (m) {
+            memes.push({ src: m.src, href: m.href, issue: issue });
+          });
+        });
+        order = memes;
+        render();
+      })
+      .catch(function (err) {
+        console.error('Could not load memes', err);
+        document.getElementById('grid').innerHTML =
+          '<div class="memes-empty">memes failed to load</div>';
+      });
+
+    document.getElementById('shuffle').addEventListener('click', function () {
+      shuffled = !shuffled;
+      this.setAttribute('aria-pressed', String(shuffled));
+      this.textContent = shuffled ? 'newest first' : 'shuffle';
+      order = shuffled ? shuffle(memes.slice()) : memes;
+      render();
+    });
+
+    window.addEventListener('resize', function () {
+      if (memes.length && columnCount() !== columns) render();
+    });
+
+    function columnCount() {
+      var w = window.innerWidth;
+      return w < 480 ? 1 : w < 992 ? 2 : 3;
+    }
+
+    function render() {
+      var issueCount = {};
+      memes.forEach(function (m) { issueCount[m.issue.file] = 1; });
+      document.getElementById('status').textContent =
+        memes.length + ' memes from ' + Object.keys(issueCount).length + ' issues';
+
+      columns = columnCount();
+      var cols = [];
+      for (var c = 0; c < columns; c++) cols.push('');
+      order.forEach(function (m, i) { cols[i % columns] += card(m); });
+
+      var grid = document.getElementById('grid');
+      grid.innerHTML = cols.map(function (html) {
+        return '<div class="memes-col">' + html + '</div>';
+      }).join('');
+
+      // Some old images have been taken down by their hosts; drop those cards.
+      grid.querySelectorAll('img').forEach(function (img) {
+        img.addEventListener('error', function () {
+          var fig = img.closest('.meme');
+          if (fig) fig.remove();
+        });
+      });
+    }
+
+    function card(m) {
+      var img = '<img src="' + esc(m.src) + '" alt="Meme from ' + esc(m.issue.title) +
+                '" loading="lazy" decoding="async" referrerpolicy="no-referrer">';
+      return '<figure class="meme">' +
+             (m.href
+               ? '<a class="meme-img-link" href="' + esc(m.href) + '" target="_blank" rel="noopener">' + img + '</a>'
+               : img) +
+             '<figcaption>' +
+             '<a class="meme-issue" href="emails/' + esc(m.issue.file) + '" target="_blank" rel="noopener">' +
+             esc(m.issue.title) + '</a>' +
+             '<span class="meme-date">' + esc(m.issue.date) + '</span>' +
+             '</figcaption>' +
+             '</figure>';
+    }
+
+    function shuffle(a) {
+      for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = a[i]; a[i] = a[j]; a[j] = t;
+      }
+      return a;
+    }
+
+    function esc(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+  }());
+  </script>
+</body>
+</html>
