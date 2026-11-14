@@ -67,6 +67,39 @@
       color: rgba(255,255,255,0.5);
     }
 
+    /* ── Random meme ── */
+    .random-meme {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .random-meme[hidden] { display: none; }
+
+    .random-meme img {
+      display: block;
+      max-width: min(420px, 100%);
+      max-height: 360px;
+      width: auto;
+      height: auto;
+    }
+
+    .random-meme-caption {
+      display: flex;
+      gap: 12px;
+      margin-top: 6px;
+      font-family: Univers, sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      line-height: 11px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .random-meme-caption a { color: rgba(255,255,255,0.6); }
+    .random-meme-caption a:hover { color: #000; }
+
     /* ── Search ── */
     .archive-search {
       margin-bottom: 32px;
@@ -319,6 +352,14 @@
       <a href="memes.html" class="header-home header-memes">memes</a>
     </div>
 
+    <div class="random-meme" id="random-meme" hidden>
+      <a href="memes.html"><img id="random-meme-img" alt=""></a>
+      <div class="random-meme-caption">
+        <a id="random-meme-issue" href="#" target="_blank" rel="noopener"></a>
+        <a href="memes.html">more memes</a>
+      </div>
+    </div>
+
     <div class="archive-search">
       <input type="text" id="search-input" class="search-input" placeholder="search" autocomplete="off" spellcheck="false">
     </div>
@@ -328,6 +369,39 @@
       <div class="archive-list" id="email-list" aria-live="polite"></div>
     </div>
   </div>
+
+  <script>
+  // A different meme from the guide each time the page opens. The block stays
+  // hidden until an image actually loads; dead links get skipped.
+  (function () {
+    fetch('emails/memes.json')
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (issues) {
+        var pool = [];
+        issues.forEach(function (issue) {
+          issue.memes.forEach(function (m) { pool.push({ src: m.src, issue: issue }); });
+        });
+        tryOne(pool, 5);
+      })
+      .catch(function () {});
+
+    function tryOne(pool, attempts) {
+      if (!pool.length || !attempts) return;
+      var pick = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
+      var img = document.getElementById('random-meme-img');
+      img.onload = function () {
+        var issue = document.getElementById('random-meme-issue');
+        issue.textContent = pick.issue.title;
+        issue.href = 'emails/' + pick.issue.file;
+        img.alt = 'Meme from ' + pick.issue.title;
+        document.getElementById('random-meme').hidden = false;
+      };
+      img.onerror = function () { tryOne(pool, attempts - 1); };
+      img.referrerPolicy = 'no-referrer';
+      img.src = pick.src;
+    }
+  }());
+  </script>
 
   <script>
   (function () {
