@@ -68,6 +68,10 @@
     }
 
     /* ── Random meme ── */
+    /* The slot is a fixed height from the start, so the search box and list
+       below don't jump when the image arrives. Each meme scales to fit the
+       slot whatever its shape (wide ones fill the width, tall ones the
+       height), and it's centred in the slot along with its caption. */
     .random-meme {
       display: flex;
       flex-direction: column;
@@ -77,18 +81,33 @@
 
     .random-meme[hidden] { display: none; }
 
+    /* 360px for the image + 17px for the caption under it. */
+    .random-meme-frame {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 377px;
+    }
+
+    .random-meme-frame > a { display: block; max-width: 100%; }
+
     .random-meme img {
       display: block;
-      max-width: min(420px, 100%);
+      max-width: min(640px, 100%);
       max-height: 360px;
       width: auto;
       height: auto;
+      visibility: hidden;
     }
 
     .random-meme-caption {
       display: flex;
       gap: 12px;
+      height: 11px;
       margin-top: 6px;
+      visibility: hidden;
       font-family: Univers, sans-serif;
       font-weight: 700;
       font-size: 11px;
@@ -99,6 +118,14 @@
 
     .random-meme-caption a { color: rgba(255,255,255,0.6); }
     .random-meme-caption a:hover { color: #000; }
+
+    .random-meme.is-loaded img,
+    .random-meme.is-loaded .random-meme-caption { visibility: visible; }
+
+    @media screen and (max-width: 479px) {
+      .random-meme-frame { height: 317px; }
+      .random-meme img { max-height: 300px; }
+    }
 
     /* ── Search ── */
     .archive-search {
@@ -354,11 +381,13 @@
       <a href="memes.html" class="header-home header-memes">memes</a>
     </div>
 
-    <div class="random-meme" id="random-meme" hidden>
-      <a href="memes.html"><img id="random-meme-img" alt=""></a>
-      <div class="random-meme-caption">
-        <a id="random-meme-issue" href="#" target="_blank" rel="noopener"></a>
-        <a href="memes.html">more memes</a>
+    <div class="random-meme" id="random-meme">
+      <div class="random-meme-frame">
+        <a href="memes.html"><img id="random-meme-img" alt=""></a>
+        <div class="random-meme-caption">
+          <a id="random-meme-issue" href="#" target="_blank" rel="noopener"></a>
+          <a href="memes.html">more memes</a>
+        </div>
       </div>
     </div>
 
@@ -373,8 +402,9 @@
   </div>
 
   <script>
-  // A different meme from the guide each time the page opens. The block stays
-  // hidden until an image actually loads; dead links get skipped.
+  // A different meme from the guide each time the page opens. Its slot is
+  // reserved up front and the meme fades in once an image actually loads;
+  // dead links get skipped. Only if none load does the slot collapse.
   (function () {
     fetch('emails/memes.json')
       .then(function (r) { return r.ok ? r.json() : []; })
@@ -385,10 +415,14 @@
         });
         tryOne(pool, 5);
       })
-      .catch(function () {});
+      .catch(giveUp);
+
+    function giveUp() {
+      document.getElementById('random-meme').hidden = true;
+    }
 
     function tryOne(pool, attempts) {
-      if (!pool.length || !attempts) return;
+      if (!pool.length || !attempts) return giveUp();
       var pick = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
       var img = document.getElementById('random-meme-img');
       img.onload = function () {
@@ -396,7 +430,7 @@
         issue.textContent = pick.issue.title;
         issue.href = 'emails/' + pick.issue.file;
         img.alt = 'Meme from ' + pick.issue.title;
-        document.getElementById('random-meme').hidden = false;
+        document.getElementById('random-meme').classList.add('is-loaded');
       };
       img.onerror = function () { tryOne(pool, attempts - 1); };
       img.referrerPolicy = 'no-referrer';
