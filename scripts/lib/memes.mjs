@@ -4,11 +4,13 @@
 // An issue's memes are the images that come after its last piece of text and
 // before the footer (Copyright / Unsubscribe). There's usually one, sometimes
 // a few. Template images (section dividers, the footer graphic, social icons)
-// are skipped: they're recognised by showing up in more than one issue.
+// are skipped: they're recognised by showing up in more than one issue. An
+// image counts once whether an issue uses its original URL or its R2 copy
+// (see lib/images.mjs), so a partly mirrored archive gives the same answer.
 
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { loadManifest } from './images.mjs';
+import { canonicalSrc } from './images.mjs';
 
 // Real issues are "the guide v.N" (one is typo'd "the guie"); test sends reuse
 // the previous issue's images, so they'd make a meme look like a template.
@@ -25,7 +27,7 @@ const TEMPLATE_MIN_ISSUES = 2;
 const MIN_WIDTH = 100;
 
 // Images that sit where a meme would but aren't memes. Add a src here to drop it
-// (either the original URL or its R2 copy; originals are matched via emails/images.json).
+// (the original URL or its R2 copy both work).
 const NOT_MEMES = new Set([
   // v.363: the NYC Dyke March statement about 3 Dollar Bill (two slides)
   'https://gallery.eocampaign1.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2Fmedia-manager%2F1717085930604-1.jpg',
@@ -105,21 +107,20 @@ export async function writeMemeIndex(entries, emailsDir) {
     issues.push({ entry, number: Number(m[1]), tokens: tokenize(html) });
   }
 
+  const id = canonicalSrc;
+
   const seenIn = new Map();
   for (const { tokens } of issues) {
-    const srcs = new Set(tokens.filter((t) => t.type === 'img').map((t) => t.src));
-    for (const src of srcs) seenIn.set(src, (seenIn.get(src) || 0) + 1);
+    const ids = new Set(tokens.filter((t) => t.type === 'img').map((t) => id(t.src)));
+    for (const i of ids) seenIn.set(i, (seenIn.get(i) || 0) + 1);
   }
-  const isTemplate = (src) => seenIn.get(src) >= TEMPLATE_MIN_ISSUES;
-
-  const manifest = await loadManifest(emailsDir);
-  const notMemes = new Set(NOT_MEMES);
-  for (const src of NOT_MEMES) if (manifest[src]?.url) notMemes.add(manifest[src].url);
+  const isTemplate = (src) => seenIn.get(id(src)) >= TEMPLATE_MIN_ISSUES;
+  const notMemes = new Set([...NOT_MEMES].map(id));
 
   const index = [];
   for (const { entry, number, tokens } of issues) {
     if (number < FIRST_MEME_ISSUE) continue;
-    const memes = extractMemes(tokens, isTemplate).filter((m) => !notMemes.has(m.src));
+    const memes = extractMemes(tokens, isTemplate).filter((m) => !notMemes.has(id(m.src)));
     if (memes.length) {
       index.push({ file: entry.file, title: entry.title, date: entry.date, memes });
     }

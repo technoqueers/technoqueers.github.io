@@ -26,11 +26,17 @@ function encodePath(p) {
   ).join('/');
 }
 
+// Returns the config, or { problems: [...] } if anything is missing or malformed.
 export function r2ConfigFromEnv(env = process.env) {
-  const missing = ['R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY', 'R2_BUCKET', 'R2_PUBLIC_BASE_URL']
-    .filter((name) => !env[name]);
-  if (!env.R2_ENDPOINT && !env.R2_ACCOUNT_ID) missing.push('R2_ACCOUNT_ID (or R2_ENDPOINT)');
-  if (missing.length) return { missing };
+  const problems = ['R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY', 'R2_BUCKET', 'R2_PUBLIC_BASE_URL']
+    .filter((name) => !env[name])
+    .map((name) => `${name} is not set`);
+  if (!env.R2_ENDPOINT && !env.R2_ACCOUNT_ID) problems.push('R2_ACCOUNT_ID (or R2_ENDPOINT) is not set');
+  // Without a scheme, every rewritten <img src> would be a broken relative URL.
+  for (const name of ['R2_PUBLIC_BASE_URL', 'R2_ENDPOINT']) {
+    if (env[name] && !/^https?:\/\/[^/]/i.test(env[name])) problems.push(`${name} must start with https://`);
+  }
+  if (problems.length) return { problems };
   return {
     endpoint: (env.R2_ENDPOINT || `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`).replace(/\/+$/, ''),
     accessKeyId: env.R2_ACCESS_KEY_ID,
@@ -71,26 +77,44 @@ export function signRequest({ method, url, headers = {}, payloadHash, date, acce
 }
 
 export function createR2Client(config) {
-  async function request(method, key, { body, headers = {} } = {}) {
+  // Every failure here (HTTP or network) throws an error starting "R2 ", so it
+  // can't be mistaken for a problem with the source image. Network errors and
+  // 5xx responses are retried a couple of times first.
+  async function request(method, key, { body, headers = {} } = {}, attempts = 3) {
     const url = new URL(`${config.endpoint}/${encodePath(config.bucket)}/${encodePath(key)}`);
-    const sendHeaders = signRequest({
-      method,
-      url,
-      headers,
-      payloadHash: sha256Hex(body || ''),
-      date: new Date(),
-      accessKeyId: config.accessKeyId,
-      secretAccessKey: config.secretAccessKey,
-    });
-    return fetch(url, { method, headers: sendHeaders, body });
+    for (let attempt = 1; ; attempt++) {
+      const sendHeaders = signRequest({
+        method,
+        url,
+        headers,
+        payloadHash: sha256Hex(body || ''),
+        date: new Date(),
+        accessKeyId: config.accessKeyId,
+        secretAccessKey: config.secretAccessKey,
+      });
+      let res;
+      try {
+        res = await fetch(url, { method, headers: sendHeaders, body, signal: AbortSignal.timeout(120_000) });
+      } catch (err) {
+        if (attempt < attempts) { await sleep(attempt); continue; }
+        throw new Error(`R2 ${method} ${key}: ${err.cause?.code || err.message}`);
+      }
+      if (res.status >= 500 && attempt < attempts) {
+        await res.body?.cancel();
+        await sleep(attempt);
+        continue;
+      }
+      return res;
+    }
   }
 
   return {
-    publicUrl: (key) => `${config.publicBaseUrl}/${encodePath(key)}`,
+    publicBaseUrl: config.publicBaseUrl,
 
     // Returns { contentType, bytes } if the object exists, null on 404; throws otherwise.
     async head(key) {
       const res = await request('HEAD', key);
+      await res.body?.cancel();
       if (res.status === 404) return null;
       if (!res.ok) throw new Error(`R2 HEAD ${key} -> HTTP ${res.status}`);
       return {
@@ -107,17 +131,22 @@ export function createR2Client(config) {
           'cache-control': 'public, max-age=31536000, immutable',
         },
       });
-      if (!res.ok) throw new Error(`R2 PUT ${key} -> HTTP ${res.status}: ${await res.text()}`);
+      const text = await res.text();
+      if (!res.ok) throw new Error(`R2 PUT ${key} -> HTTP ${res.status}: ${text}`);
     },
   };
 }
 
-// The R2 client if configured, else null with a warning — for scripts where
+function sleep(attempt) {
+  return new Promise((r) => setTimeout(r, 1000 * 2 ** attempt));
+}
+
+// The R2 client if configured, else null with a warning: for scripts where
 // mirroring images is a bonus rather than the point (sync, backfill).
 export function imageMirror() {
   const config = r2ConfigFromEnv();
-  if (config.missing) {
-    console.warn(`R2 not configured (missing ${config.missing.join(', ')}); leaving images on their original hosts.`);
+  if (config.problems) {
+    console.warn(`R2 not configured (${config.problems.join('; ')}); new images stay on their original hosts.`);
     return null;
   }
   return createR2Client(config);

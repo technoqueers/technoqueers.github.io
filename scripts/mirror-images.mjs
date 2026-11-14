@@ -7,9 +7,12 @@
 //
 //   node scripts/mirror-images.mjs                 mirror what's missing, then rewrite issues
 //   node scripts/mirror-images.mjs --dry-run       report what would be mirrored (no R2 needed)
-//   node scripts/mirror-images.mjs --retry-failed  also retry images that failed before
+//   node scripts/mirror-images.mjs --retry-failed  also retry images that failed permanently (404s etc.)
 //   node scripts/mirror-images.mjs --rewrite-only  only apply the manifest to the issues (no R2 needed)
 //   node scripts/mirror-images.mjs --concurrency=8
+//
+// Images that failed transiently (rate limits, 5xx, timeouts) are always retried.
+// Changing R2_PUBLIC_BASE_URL and rerunning moves every issue to the new domain.
 
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -23,9 +26,17 @@ const EMAILS_DIR = path.resolve(__dirname, '..', 'emails');
 
 const args = process.argv.slice(2);
 const flag = (name) => args.includes(`--${name}`);
-const concurrency = Number((args.find((a) => a.startsWith('--concurrency=')) || '').split('=')[1]) || 6;
+
+function concurrencyArg() {
+  const arg = args.find((a) => a.startsWith('--concurrency='));
+  if (!arg) return 6;
+  const n = Number(arg.split('=')[1]);
+  if (!Number.isInteger(n) || n < 1) throw new Error(`--concurrency must be a positive integer, got ${arg}`);
+  return n;
+}
 
 async function main() {
+  const concurrency = concurrencyArg();
   const manifest = await loadManifest(EMAILS_DIR);
   const files = (await readdir(EMAILS_DIR)).filter((f) => f.endsWith('.html')).sort();
 
@@ -34,14 +45,16 @@ async function main() {
   for (const file of files) {
     const html = await readFile(path.join(EMAILS_DIR, file), 'utf-8');
     issues.push({ file, html });
-    for (const src of findImageSrcs(html, manifest)) allSrcs.add(src);
+    for (const src of findImageSrcs(html)) allSrcs.add(src);
   }
 
-  const failedBefore = [...allSrcs].filter((s) => manifest[s] && !manifest[s].url).length;
-  const pending = pendingSrcs([...allSrcs], manifest, { retryFailed: flag('retry-failed') });
-  console.log(`${files.length} issue(s), ${allSrcs.size} unmirrored image URL(s) referenced; ` +
-    `${pending.length} to mirror, ${failedBefore} failed before` +
-    (flag('retry-failed') ? ' (retrying)' : ' (skipped; use --retry-failed)'));
+  const retryFailed = flag('retry-failed');
+  const unmirrored = [...allSrcs].filter((s) => !manifest.images[s]?.key);
+  const failedPermanently = unmirrored.filter((s) => manifest.images[s] && !manifest.images[s].transient).length;
+  const pending = pendingSrcs(unmirrored, manifest, { retryFailed });
+  console.log(`${files.length} issue(s), ${unmirrored.length} image URL(s) not yet backed up; ` +
+    `${pending.length} to mirror, ${failedPermanently} failed permanently before` +
+    (retryFailed ? ' (retrying)' : ' (skipped; use --retry-failed)'));
 
   if (flag('dry-run')) {
     const byHost = {};
@@ -53,27 +66,36 @@ async function main() {
     return;
   }
 
-  if (!flag('rewrite-only') && pending.length) {
+  if (!flag('rewrite-only')) {
     const config = r2ConfigFromEnv();
-    if (config.missing) throw new Error(`Missing environment: ${config.missing.join(', ')}`);
+    if (config.problems) throw new Error(`R2 config: ${config.problems.join('; ')}`);
     const r2 = createR2Client(config);
 
-    let counts;
+    if (manifest.base && manifest.base !== r2.publicBaseUrl) {
+      console.log(`Public base URL changed: ${manifest.base} -> ${r2.publicBaseUrl}; issues will be moved over.`);
+    }
+    manifest.base = r2.publicBaseUrl;
+
+    let counts = { uploaded: 0, existing: 0, failed: 0 };
     try {
-      counts = await mirrorSrcs(pending, {
-        manifest,
-        r2,
-        concurrency,
-        onCheckpoint: () => saveManifest(manifest, EMAILS_DIR),
-        onResult: (src, outcome, done, total) => {
-          if (outcome === 'failed') console.log(`  ! ${src}: ${manifest[src].error}`);
-          if (done % 100 === 0 || done === total) console.log(`  ${done}/${total}`);
-        },
-      });
+      if (pending.length) {
+        counts = await mirrorSrcs(pending, {
+          manifest,
+          r2,
+          concurrency,
+          onCheckpoint: () => saveManifest(manifest, EMAILS_DIR),
+          onResult: (src, outcome, done, total) => {
+            if (outcome === 'failed') console.log(`  ! ${src}: ${manifest.images[src].error}`);
+            if (done % 100 === 0 || done === total) console.log(`  ${done}/${total}`);
+          },
+        });
+      }
     } finally {
       await saveManifest(manifest, EMAILS_DIR);
     }
     console.log(`Mirrored: ${counts.uploaded} uploaded, ${counts.existing} already in R2, ${counts.failed} failed.`);
+  } else if (!manifest.base) {
+    throw new Error('emails/images.json has no base URL yet; run without --rewrite-only first.');
   }
 
   let rewrittenFiles = 0;

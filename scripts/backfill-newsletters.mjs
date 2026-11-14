@@ -3,8 +3,9 @@
 // any not already in emails/data.json (matched by campaign id), each as its
 // own HTML file, then re-sorts data.json newest-first by date.
 // Requires EMAILOCTOPUS_API_KEY in the environment. With the R2_* variables
-// (see lib/r2.mjs) set, it also backs the issue's images up to R2 and points
-// the issue at the copies.
+// (see lib/r2.mjs) set, it also backs the issue's images up to R2; either way
+// the issue is pointed at any R2 copies that already exist. R2 problems are
+// only warned about, so they never stop an issue from being archived.
 
 import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -12,7 +13,7 @@ import path from 'node:path';
 import { fetchAllSentCampaigns, buildArchiveItem, writeSearchIndex } from './lib/eo.mjs';
 import { writeMemeIndex } from './lib/memes.mjs';
 import { imageMirror } from './lib/r2.mjs';
-import { loadManifest, saveManifest, mirrorIssueHtml } from './lib/images.mjs';
+import { loadManifest, mirrorIssueHtml } from './lib/images.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -41,8 +42,7 @@ async function main() {
   const added = [];
   for (const summary of missing) {
     const { entry, file, html } = await buildArchiveItem(summary);
-    await writeFile(path.join(EMAILS_DIR, file), await mirrorIssueHtml(html, { manifest, r2 }), 'utf-8');
-    if (r2) await saveManifest(manifest, EMAILS_DIR);
+    await writeFile(path.join(EMAILS_DIR, file), await mirrorIssueHtml(html, { manifest, r2, emailsDir: EMAILS_DIR }), 'utf-8');
     data.push(entry);
     added.push(entry);
     console.log(`  + ${entry.subject} (${entry.date}) -> emails/${file}`);
