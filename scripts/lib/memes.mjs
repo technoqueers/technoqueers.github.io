@@ -23,6 +23,13 @@ const TEMPLATE_MIN_ISSUES = 2;
 // Smaller than this is an icon, not a meme.
 const MIN_WIDTH = 100;
 
+// Images that sit where a meme would but aren't memes. Add a src here to drop it.
+const NOT_MEMES = new Set([
+  // v.363: the NYC Dyke March statement about 3 Dollar Bill (two slides)
+  'https://gallery.eocampaign1.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2Fmedia-manager%2F1717085930604-1.jpg',
+  'https://gallery.eocampaign1.com/62a6a8da-856c-11ee-aacc-278c4c25eb7d%2Fmedia-manager%2F1717085938613-2.jpg',
+]);
+
 function attr(tag, name) {
   const m = tag.match(new RegExp(`\\b${name}="([^"]*)"`, 'i'));
   return m ? m[1] : '';
@@ -106,7 +113,7 @@ export async function writeMemeIndex(entries, emailsDir) {
   const index = [];
   for (const { entry, number, tokens } of issues) {
     if (number < FIRST_MEME_ISSUE) continue;
-    const memes = extractMemes(tokens, isTemplate);
+    const memes = extractMemes(tokens, isTemplate).filter((m) => !NOT_MEMES.has(m.src));
     if (memes.length) {
       index.push({ file: entry.file, title: entry.title, date: entry.date, memes });
     }
