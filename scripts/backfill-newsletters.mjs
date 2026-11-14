@@ -8,6 +8,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { fetchAllSentCampaigns, buildArchiveItem, writeSearchIndex } from './lib/eo.mjs';
+import { writeMemeIndex } from './lib/memes.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -42,6 +43,7 @@ async function main() {
   data.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
   await writeFile(DATA_JSON, JSON.stringify(data), 'utf-8');
   await writeSearchIndex(data, EMAILS_DIR);
+  await writeMemeIndex(data, EMAILS_DIR);
 
   console.log(`Backfilled ${added.length} newsletter issue(s).`);
 }
