@@ -26,7 +26,13 @@ function encodePath(p) {
   ).join('/');
 }
 
-// Returns the config, or { problems: [...] } if anything is missing or malformed.
+// R2 settings that, if any is set, mean R2 is meant to be in use.
+const R2_VARS = ['R2_ACCOUNT_ID', 'R2_ENDPOINT', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY', 'R2_BUCKET', 'R2_PUBLIC_BASE_URL'];
+
+// Returns the config, or { problems: [...], unset } if anything is missing or
+// malformed. `unset` is true when no R2 variable is set at all (R2 not set up
+// yet, as opposed to set up wrong). Empty strings count as unset, which is
+// what GitHub Actions passes for a secret that doesn't exist.
 export function r2ConfigFromEnv(env = process.env) {
   const problems = ['R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY', 'R2_BUCKET', 'R2_PUBLIC_BASE_URL']
     .filter((name) => !env[name])
@@ -36,7 +42,7 @@ export function r2ConfigFromEnv(env = process.env) {
   for (const name of ['R2_PUBLIC_BASE_URL', 'R2_ENDPOINT']) {
     if (env[name] && !/^https?:\/\/[^/]/i.test(env[name])) problems.push(`${name} must start with https://`);
   }
-  if (problems.length) return { problems };
+  if (problems.length) return { problems, unset: R2_VARS.every((name) => !env[name]) };
   return {
     endpoint: (env.R2_ENDPOINT || `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`).replace(/\/+$/, ''),
     accessKeyId: env.R2_ACCESS_KEY_ID,
@@ -141,8 +147,10 @@ function sleep(attempt) {
   return new Promise((r) => setTimeout(r, 1000 * 2 ** attempt));
 }
 
-// The R2 client if configured, else null with a warning: for scripts where
-// mirroring images is a bonus rather than the point (sync, backfill).
+// The R2 client if configured, else null with a log line: for scripts where
+// mirroring images is a bonus rather than the point (sync, backfill). In the
+// weekly workflow, the mirror-images step after the sync reports R2 problems
+// on the run page.
 export function imageMirror() {
   const config = r2ConfigFromEnv();
   if (config.problems) {

@@ -10,6 +10,8 @@
 //   node scripts/mirror-images.mjs --retry-failed  also retry images that failed permanently (404s etc.)
 //   node scripts/mirror-images.mjs --rewrite-only  only apply the manifest to the issues (no R2 needed)
 //   node scripts/mirror-images.mjs --concurrency=8
+//   node scripts/mirror-images.mjs --skip-if-unset  succeed with a warning if no R2_* var is set
+//                                                   (the weekly workflow, before R2 is set up)
 //
 // Images that failed transiently (rate limits, 5xx, timeouts) are always retried.
 // Changing R2_PUBLIC_BASE_URL and rerunning moves every issue to the new domain.
@@ -20,6 +22,7 @@ import path from 'node:path';
 import { r2ConfigFromEnv, createR2Client } from './lib/r2.mjs';
 import { loadManifest, saveManifest, findImageSrcs, pendingSrcs, mirrorSrcs, rewriteHtml } from './lib/images.mjs';
 import { writeMemeIndex } from './lib/memes.mjs';
+import { warning, error } from './lib/annotate.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const EMAILS_DIR = path.resolve(__dirname, '..', 'emails');
@@ -68,7 +71,12 @@ async function main() {
 
   if (!flag('rewrite-only')) {
     const config = r2ConfigFromEnv();
-    if (config.problems) throw new Error(`R2 config: ${config.problems.join('; ')}`);
+    if (config.problems && config.unset && flag('skip-if-unset')) {
+      warning(`R2 isn't set up (no R2_* secrets), so ${pending.length} image(s) are not backed up. ` +
+        'See scripts/lib/r2.mjs for the secrets to add.');
+      return;
+    }
+    if (config.problems) throw new Error(`R2 settings: ${config.problems.join('; ')}`);
     const r2 = createR2Client(config);
 
     if (manifest.base && manifest.base !== r2.publicBaseUrl) {
@@ -94,6 +102,10 @@ async function main() {
       await saveManifest(manifest, EMAILS_DIR);
     }
     console.log(`Mirrored: ${counts.uploaded} uploaded, ${counts.existing} already in R2, ${counts.failed} failed.`);
+    if (counts.failed) {
+      warning(`${counts.failed} image(s) couldn't be downloaded and keep their original URLs; ` +
+        'the log lists them. Temporary failures are retried on the next run.');
+    }
   } else if (!manifest.base) {
     throw new Error('emails/images.json has no base URL yet; run without --rewrite-only first.');
   }
@@ -119,6 +131,7 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error(err.stack || err.message);
+  error(`Image backup failed: ${err.message}`);
+  console.error(err.stack);
   process.exit(1);
 });
