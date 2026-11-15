@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Technoqueers — Best Of</title>
+  <meta content="The best articles from the Technoqueers guide, picked by the editors." name="description">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <link href="css/normalize.css" rel="stylesheet" type="text/css">
+  <link href="css/technoqueers.webflow.css" rel="stylesheet" type="text/css">
+  <link href="css/site-header.css" rel="stylesheet" type="text/css">
+  <link href="images/favicon.png" rel="shortcut icon" type="image/x-icon">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background-color: #6e6e6e;
+      margin: 0;
+      padding: 0;
+      font-family: Univers, sans-serif;
+      color: #fff;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* ── Search ── */
+    .search { margin-bottom: 32px; }
+
+    .search-input {
+      display: block;
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      height: 40px;
+      /* Uppercase-only text never uses the font's descender space, so with
+         even padding the caps sit high; 5px on top centres them. */
+      padding: 5px 20px 0;
+      border: 1px solid #000;
+      border-radius: 20px;
+      background: transparent;
+      font-family: Univers, sans-serif;
+      font-weight: 700;
+      font-size: 17px;
+      line-height: 17px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #000;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .search-input::placeholder { color: rgba(0,0,0,0.35); }
+
+    /* ── Layout ── */
+    .layout {
+      display: flex;
+      gap: 48px;
+      align-items: flex-start;
+    }
+
+    .year-nav { flex: 0 0 140px; }
+
+    .nav-year {
+      display: block;
+      width: 100%;
+      font-family: Univers, sans-serif;
+      font-weight: 700;
+      font-size: 17px;
+      line-height: 17px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #fff;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      /* Caps-only text sits high with even padding; 3px moved from bottom to
+         top centres it (same height as before). */
+      padding: 9px 10px 3px;
+      margin-bottom: 2px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .nav-year:hover { background: rgba(0,0,0,0.15); }
+    .nav-year.active { color: #000; background: #fff; }
+
+    .nav-count {
+      font-size: 11px;
+      opacity: 0.55;
+      margin-left: 3px;
+    }
+
+    .list { flex: 1; min-width: 0; }
+
+    .list-status {
+      font-family: Univers, sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 16px;
+    }
+
+    .group-header {
+      font-family: Univers, sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      padding: 16px 0 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      margin-bottom: 4px;
+    }
+
+    .group-header:first-child { padding-top: 0; }
+
+    .item {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.12);
+    }
+
+    .item-date {
+      flex: 0 0 94px;
+      font-family: Univers, sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      white-space: nowrap;
+    }
+
+    .item-body { flex: 1; min-width: 0; }
+
+    .item-title {
+      font-family: Univers, sans-serif;
+      font-weight: 700;
+      font-size: 17px;
+      line-height: 21px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #fff;
+      overflow-wrap: anywhere;
+    }
+
+    .item-title:hover { color: #000; }
+
+    /* Matches the title: white, and black with it on hover. */
+    .heart { color: inherit; margin-right: 6px; }
+
+    .item-from {
+      font-family: Univers, sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-top: 3px;
+    }
+
+    .item-from a { color: rgba(255,255,255,0.7); text-decoration: underline; }
+    .item-from a:hover { color: #000; }
+
+    .item-note {
+      font-family: Univers, sans-serif;
+      font-size: 14px;
+      line-height: 19px;
+      color: #e8e8e8;
+      margin-top: 3px;
+      overflow-wrap: anywhere;
+    }
+
+    .empty {
+      font-family: Univers, sans-serif;
+      font-weight: 700;
+      font-size: 17px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      padding: 20px 0;
+    }
+
+    /* ── Mobile ── */
+    @media screen and (max-width: 767px) {
+      .wrap { padding: 24px 16px 60px; }
+
+      .layout {
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .year-nav {
+        flex: none;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .nav-year {
+        flex: 0 0 auto;
+        width: auto;
+        margin-bottom: 0;
+      }
+    }
+
+    @media screen and (max-width: 479px) {
+      .search-input { font-size: 13px; }
+      .item-title { font-size: 14px; line-height: 18px; }
+      .item-date { font-size: 11px; flex: 0 0 80px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="site-header">
+      <a href="/" class="site-home">technoqueers</a>
+      <nav class="section-nav" aria-label="Sections">
+        <a href="archive.html" class="section-link">archive</a>
+        <a href="best-of.html" class="section-link" aria-current="page">♥︎ best of</a>
+        <a href="memes.html" class="section-link">memes</a>
+      </nav>
+    </header>
+
+    <div class="search">
+      <input type="text" id="search-input" class="search-input" placeholder="search the best of" autocomplete="off" spellcheck="false" aria-label="Search the best of">
+    </div>
+
+    <div class="layout">
+      <nav class="year-nav" id="year-nav" aria-label="Browse by year"></nav>
+      <div class="list" id="list" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <script>
+  // Articles from the guide that the editors picked as the best, browsable by
+  // the year of the issue they ran in. Picks come from emails/best-of.json
+  // (written by the admin page); issue titles and dates from emails/data.json.
+  (function () {
+    var HEART = '♥︎';
+    var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+                  'August', 'September', 'October', 'November', 'December'];
+    var picks = [];   // newest issue first
+    var activeYear = null;
+    var query = '';
+
+    Promise.all([
+      fetch('emails/data.json').then(function (r) { return r.json(); }),
+      fetch('emails/best-of.json', { cache: 'no-cache' })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .catch(function () { return []; }),
+    ])
+      .then(function (results) {
+        var byFile = {};
+        results[0].forEach(function (c) { byFile[c.file] = c; }); // picks name their issue by filename
+        picks = (Array.isArray(results[1]) ? results[1] : []).filter(function (p) {
+          return p && byFile[p.issue] && typeof p.title === 'string' && p.title &&
+                 typeof p.url === 'string' && /^https?:\/\//i.test(p.url);
+        }).map(function (p, i) {
+          var issue = byFile[p.issue];
+          return { issue: issue, url: p.url, title: p.title, note: typeof p.note === 'string' ? p.note : '', order: i };
+        }).sort(function (a, b) {
+          return a.issue.date < b.issue.date ? 1 : a.issue.date > b.issue.date ? -1 : a.order - b.order;
+        });
+
+        var fromHash = parseInt(location.hash.slice(1), 10);
+        var ys = years();
+        activeYear = ys.some(function (y) { return y.year === fromHash; }) ? fromHash : (ys.length ? ys[0].year : null);
+        render();
+      })
+      .catch(function (err) {
+        console.error('Could not load the best of', err);
+        document.getElementById('list').innerHTML = '<div class="empty">the best of failed to load</div>';
+      });
+
+    document.getElementById('search-input').addEventListener('input', function (e) {
+      query = e.target.value.trim();
+      render();
+    });
+
+    function years() {
+      var counts = {};
+      picks.forEach(function (p) { counts[p.issue.year] = (counts[p.issue.year] || 0) + 1; });
+      return Object.keys(counts).map(Number).sort(function (a, b) { return b - a; })
+        .map(function (y) { return { year: y, count: counts[y] }; });
+    }
+
+    // Lowercase, no accents, punctuation as spaces, so "vos" finds "Vôs".
+    function fold(s) {
+      return s.toLowerCase().replace(/[^a-z0-9 ]/g, function (ch) {
+        var base = ch.normalize('NFD').charAt(0);
+        return /[\p{L}\p{N}]/u.test(base) ? base : ' ';
+      });
+    }
+
+    function render() {
+      renderNav();
+      renderList();
+    }
+
+    function renderNav() {
+      var nav = document.getElementById('year-nav');
+      if (query) { nav.innerHTML = ''; return; }
+      nav.innerHTML = years().map(function (y) {
+        return '<button class="nav-year' + (y.year === activeYear ? ' active' : '') + '" data-year="' + y.year + '"' +
+               (y.year === activeYear ? ' aria-current="true"' : '') + '>' +
+               y.year + '<span class="nav-count">(' + y.count + ')</span></button>';
+      }).join('');
+      nav.querySelectorAll('.nav-year').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          activeYear = parseInt(this.dataset.year, 10);
+          try { history.replaceState(null, '', '#' + activeYear); } catch (e) {}
+          render();
+        });
+      });
+    }
+
+    function renderList() {
+      var list = document.getElementById('list');
+
+      if (!picks.length) {
+        list.innerHTML = '<div class="empty">nothing here yet</div>';
+        return;
+      }
+
+      if (query) {
+        var words = fold(query).split(/\s+/).filter(Boolean);
+        var hits = picks.filter(function (p) {
+          var hay = fold(p.title + ' ' + p.note + ' ' + p.issue.title + ' ' + p.url);
+          return words.every(function (w) { return hay.indexOf(w) !== -1; });
+        });
+        list.innerHTML = hits.length
+          ? '<div class="list-status">' + hits.length + ' result' + (hits.length === 1 ? '' : 's') + '</div>' +
+            hits.map(row).join('')
+          : '<div class="empty">no results</div>';
+        return;
+      }
+
+      // One year, grouped by month, newest first.
+      var html = '', lastMonth = null;
+      picks.forEach(function (p) {
+        if (p.issue.year !== activeYear) return;
+        if (p.issue.month !== lastMonth) {
+          lastMonth = p.issue.month;
+          html += '<div class="group-header">' + MONTHS[p.issue.month - 1] + ' ' + p.issue.year + '</div>';
+        }
+        html += row(p);
+      });
+      list.innerHTML = html;
+    }
+
+    function row(p) {
+      return '<div class="item">' +
+             '<span class="item-date">' + esc(p.issue.date) + '</span>' +
+             '<div class="item-body">' +
+             '<a href="' + esc(p.url) + '" class="item-title" target="_blank" rel="noopener noreferrer">' +
+             '<span class="heart" aria-hidden="true">' + HEART + '</span>' + esc(p.title) + '</a>' +
+             '<div class="item-from">from <a href="emails/' + esc(p.issue.file) + '" target="_blank" rel="noopener">' +
+             esc(p.issue.title) + '</a></div>' +
+             (p.note ? '<div class="item-note">' + esc(p.note) + '</div>' : '') +
+             '</div>' +
+             '</div>';
+    }
+
+    function esc(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+  }());
+  </script>
+</body>
+</html>
