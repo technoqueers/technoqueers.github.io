@@ -69,6 +69,10 @@ async function main() {
     return;
   }
 
+  // An R2 error stops the uploads, but the issues are still pointed at every
+  // copy made before it; the error is rethrown once that's done.
+  let r2Error = null;
+
   if (!flag('rewrite-only')) {
     const config = r2ConfigFromEnv();
     if (config.problems && config.unset && flag('skip-if-unset')) {
@@ -98,10 +102,13 @@ async function main() {
           },
         });
       }
+    } catch (err) {
+      r2Error = err;
     } finally {
       await saveManifest(manifest, EMAILS_DIR);
     }
-    console.log(`Mirrored: ${counts.uploaded} uploaded, ${counts.existing} already in R2, ${counts.failed} failed.`);
+    if (r2Error) console.log('Uploads stopped by an R2 error; pointing issues at the copies made so far.');
+    else console.log(`Mirrored: ${counts.uploaded} uploaded, ${counts.existing} already in R2, ${counts.failed} failed.`);
     if (counts.failed) {
       warning(`${counts.failed} image(s) couldn't be downloaded and keep their original URLs; ` +
         'the log lists them. Temporary failures are retried on the next run.');
@@ -128,6 +135,8 @@ async function main() {
     await writeMemeIndex(data, EMAILS_DIR);
     console.log('Rebuilt emails/memes.json.');
   }
+
+  if (r2Error) throw r2Error;
 }
 
 main().catch((err) => {

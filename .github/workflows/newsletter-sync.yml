@@ -37,6 +37,7 @@ jobs:
           node-version: '20'
 
       - name: Fetch latest newsletter issue
+        id: sync
         env:
           EMAILOCTOPUS_API_KEY: ${{ secrets.EMAILOCTOPUS_API_KEY }}
         run: node scripts/sync-newsletter.mjs
@@ -45,13 +46,15 @@ jobs:
       # temporary failures and anything synced while R2 was down. Uploads
       # nothing once everything is backed up. R2 problems fail this step (red),
       # but the commit below still runs so the new issue is archived.
+      # Skipped, like the commit, if the sync failed: its output may be half
+      # written, and committing it would mark the issue as synced.
       - name: Back up images to R2
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && steps.sync.outcome == 'success' }}
         timeout-minutes: 300
         run: node scripts/mirror-images.mjs --skip-if-unset
 
       - name: Commit and push if changed
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && steps.sync.outcome == 'success' }}
         run: |
           git add emails/
           if git diff --cached --quiet; then

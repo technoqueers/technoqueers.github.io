@@ -161,7 +161,13 @@ async function download(src, attempts = 3) {
           throw sourceError(`not an image (${type || 'no content-type'})`, false);
         }
       }
-      const body = Buffer.from(await res.arrayBuffer());
+      let body;
+      try {
+        body = Buffer.from(await res.arrayBuffer());
+      } catch (err) {
+        // The timeout or a dropped connection mid-body: worth retrying later.
+        throw sourceError(err.name === 'TimeoutError' ? 'timed out' : `network error: ${err.cause?.code || err.message}`, true);
+      }
       if (!body.length) throw sourceError('empty response', true);
       return { body, type };
     } catch (err) {
