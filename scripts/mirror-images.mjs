@@ -20,7 +20,7 @@ import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { r2ConfigFromEnv, createR2Client } from './lib/r2.mjs';
-import { loadManifest, saveManifest, findImageSrcs, pendingSrcs, mirrorSrcs, rewriteHtml } from './lib/images.mjs';
+import { loadManifest, saveManifest, findImageSrcs, pendingSrcs, mirrorSrcs, rewriteHtml, rewriteHiddenMemes } from './lib/images.mjs';
 import { writeMemeIndex } from './lib/memes.mjs';
 import { warning, error } from './lib/annotate.mjs';
 
@@ -135,6 +135,8 @@ async function main() {
     await writeMemeIndex(data, EMAILS_DIR);
     console.log('Rebuilt emails/memes.json.');
   }
+  const movedHidden = await rewriteHiddenMemes(manifest, EMAILS_DIR);
+  if (movedHidden) console.log(`Moved ${movedHidden} hidden meme(s) in emails/hidden-memes.json to their copies.`);
 
   if (r2Error) throw r2Error;
 }

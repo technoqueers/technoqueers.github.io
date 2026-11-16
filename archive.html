@@ -7,6 +7,7 @@
   <meta content="width=device-width, initial-scale=1" name="viewport">
   <link href="css/normalize.css" rel="stylesheet" type="text/css">
   <link href="css/technoqueers.webflow.css" rel="stylesheet" type="text/css">
+  <link href="css/site-header.css" rel="stylesheet" type="text/css">
   <link href="images/favicon.png" rel="shortcut icon" type="image/x-icon">
   <style>
     *, *::before, *::after { box-sizing: border-box; }
@@ -26,45 +27,6 @@
       max-width: 960px;
       margin: 0 auto;
       padding: 40px 24px 80px;
-    }
-
-    /* ── Header ── */
-    .archive-header {
-      display: flex;
-      align-items: baseline;
-      gap: 16px;
-      margin-bottom: 36px;
-    }
-
-    .header-home {
-      font-family: Univers, sans-serif;
-      font-weight: 700;
-      font-size: 17px;
-      line-height: 17px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      color: #fff;
-    }
-
-    .header-home:hover { color: #000; }
-
-    .header-memes { margin-left: auto; }
-
-    .header-sep {
-      font-family: Univers, sans-serif;
-      font-weight: 700;
-      font-size: 17px;
-      color: rgba(255,255,255,0.35);
-    }
-
-    .header-label {
-      font-family: Univers, sans-serif;
-      font-weight: 700;
-      font-size: 17px;
-      line-height: 17px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.5);
     }
 
     /* ── Random meme ── */
@@ -185,7 +147,9 @@
       background: transparent;
       border: 1px solid transparent;
       border-radius: 10px;
-      padding: 6px 10px;
+      /* Caps-only text sits high with even padding; 3px moved from bottom to
+         top centres it (same height as before). */
+      padding: 9px 10px 3px;
       margin-bottom: 2px;
       cursor: pointer;
       text-align: left;
@@ -219,7 +183,8 @@
       background: transparent;
       border: 1px solid transparent;
       border-radius: 8px;
-      padding: 5px 8px;
+      /* Caps-only text: 2px moved from bottom to top centres it. */
+      padding: 7px 8px 3px;
       margin-bottom: 1px;
       cursor: pointer;
       text-align: left;
@@ -323,6 +288,62 @@
       padding: 20px 0;
     }
 
+    /* ── Random best-of article ── */
+    /* Sits under the random meme, centred like it. */
+    .random-best {
+      max-width: 640px;
+      margin: -12px auto 32px;
+      text-align: center;
+    }
+
+    .random-best[hidden] { display: none; }
+
+    .random-best-label,
+    .random-best-caption {
+      font-family: Univers, sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      line-height: 11px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .random-best-heart { color: #000; }
+
+    .random-best-title {
+      display: inline-block;
+      margin-top: 8px;
+      font-family: Univers, sans-serif;
+      font-weight: 700;
+      font-size: 17px;
+      line-height: 21px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #fff;
+      overflow-wrap: anywhere;
+    }
+
+    .random-best-title:hover { color: #000; }
+
+    .random-best-note {
+      font-family: Univers, sans-serif;
+      font-size: 14px;
+      line-height: 19px;
+      color: #e8e8e8;
+      margin-top: 4px;
+      overflow-wrap: anywhere;
+    }
+
+    .random-best-caption {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .random-best-caption a:hover { color: #000; }
+
     /* ── Mobile ── */
     @media screen and (max-width: 767px) {
       .archive-wrap { padding: 24px 16px 60px; }
@@ -374,12 +395,14 @@
 </head>
 <body>
   <div class="archive-wrap">
-    <div class="archive-header">
-      <a href="/" class="header-home">technoqueers</a>
-      <span class="header-sep">/</span>
-      <span class="header-label">archive</span>
-      <a href="memes.html" class="header-home header-memes">memes</a>
-    </div>
+    <header class="site-header">
+      <a href="/" class="site-home">technoqueers</a>
+      <nav class="section-nav" aria-label="Sections">
+        <a href="archive.html" class="section-link" aria-current="page">archive</a>
+        <a href="best-of.html" class="section-link">♥︎ best of</a>
+        <a href="memes.html" class="section-link">memes</a>
+      </nav>
+    </header>
 
     <div class="random-meme" id="random-meme">
       <div class="random-meme-frame">
@@ -388,6 +411,16 @@
           <a id="random-meme-issue" href="#" target="_blank" rel="noopener"></a>
           <a href="memes.html">more memes</a>
         </div>
+      </div>
+    </div>
+
+    <div class="random-best" id="random-best" hidden>
+      <div class="random-best-label"><span class="random-best-heart" aria-hidden="true">♥︎</span> from the best of</div>
+      <a class="random-best-title" id="random-best-title" href="#" target="_blank" rel="noopener noreferrer"></a>
+      <div class="random-best-note" id="random-best-note" hidden></div>
+      <div class="random-best-caption">
+        <a id="random-best-issue" href="#" target="_blank" rel="noopener"></a>
+        <a href="best-of.html">more best of</a>
       </div>
     </div>
 
@@ -406,12 +439,23 @@
   // reserved up front and the meme fades in once an image actually loads;
   // dead links get skipped. Only if none load does the slot collapse.
   (function () {
-    fetch('emails/memes.json')
-      .then(function (r) { return r.ok ? r.json() : []; })
-      .then(function (issues) {
+    // Memes Tom has hidden from the admin page. Optional: if the file is
+    // missing or broken every meme shows.
+    function hiddenMemes() {
+      return fetch('emails/hidden-memes.json', { cache: 'no-cache' })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (list) { return new Set(Array.isArray(list) ? list : []); })
+        .catch(function () { return new Set(); });
+    }
+
+    Promise.all([fetch('emails/memes.json').then(function (r) { return r.ok ? r.json() : []; }), hiddenMemes()])
+      .then(function (results) {
+        var hidden = results[1];
         var pool = [];
-        issues.forEach(function (issue) {
-          issue.memes.forEach(function (m) { pool.push({ src: m.src, issue: issue }); });
+        results[0].forEach(function (issue) {
+          issue.memes.forEach(function (m) {
+            if (!hidden.has(m.src)) pool.push({ src: m.src, issue: issue });
+          });
         });
         tryOne(pool, 5);
       })
@@ -447,13 +491,18 @@
     var query = '';
     var searchIndex = null;
     var searchState = 'idle'; // idle | loading | ready | failed
+    // Best-of picks are optional: if the file is missing or broken the
+    // archive still renders, just without the random pick.
+    var bestOf = fetch('emails/best-of.json', { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .catch(function () { return []; });
 
-    fetch('emails/data.json')
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
-        all = data; // already sorted newest-first by build script
+    Promise.all([fetch('emails/data.json').then(function (r) { return r.json(); }), bestOf])
+      .then(function (results) {
+        all = results[0]; // already sorted newest-first by build script
         activeYear = all[0].year;
         render();
+        showRandomBest(results[1]);
       });
 
     document.getElementById('search-input').addEventListener('input', function (e) {
@@ -633,6 +682,35 @@
           render();
         });
       });
+    }
+
+    /* ── Random best-of article ── */
+
+    // One of Tom's picks, different each visit, under the random meme.
+    function showRandomBest(list) {
+      var byFile = {};
+      all.forEach(function (c) { byFile[c.file] = c; }); // picks name their issue by filename
+      // Only well-formed picks from issues we know, with http(s) links.
+      var picks = (Array.isArray(list) ? list : []).filter(function (p) {
+        return p && byFile[p.issue] && typeof p.title === 'string' && p.title &&
+               typeof p.url === 'string' && /^https?:\/\//i.test(p.url);
+      });
+      if (!picks.length) return;
+
+      var p = picks[Math.floor(Math.random() * picks.length)];
+      var issue = byFile[p.issue];
+      var title = document.getElementById('random-best-title');
+      title.textContent = p.title;
+      title.href = p.url;
+      var issueLink = document.getElementById('random-best-issue');
+      issueLink.textContent = issue.title;
+      issueLink.href = 'emails/' + issue.file;
+      if (typeof p.note === 'string' && p.note) {
+        var note = document.getElementById('random-best-note');
+        note.textContent = p.note;
+        note.hidden = false;
+      }
+      document.getElementById('random-best').hidden = false;
     }
 
     /* ── Render list ── */

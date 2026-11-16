@@ -108,20 +108,48 @@ export function findImageSrcs(html) {
   return [...srcs];
 }
 
-// Points every mirrored <img src> at its copy under the manifest's base URL
-// (also moving copies from an older base). Returns { html, count }.
+// The URL `src` should load from: its copy under the manifest's base URL if it
+// has one (also moving copies from an older base), else `src` unchanged.
+export function copyUrl(src, manifest) {
+  const key = manifest.base && (manifest.images[src]?.key || mirrorKeyOf(src));
+  return key ? `${manifest.base}/${key}` : src;
+}
+
+// Points every mirrored <img src> at its copy. Returns { html, count }.
 export function rewriteHtml(html, manifest) {
-  if (!manifest.base) return { html, count: 0 };
   let count = 0;
   const out = html.replace(IMG_TAG, (tag) => tag.replace(SRC_ATTR, (m, pre, src, post) => {
-    const key = manifest.images[src]?.key || mirrorKeyOf(src);
-    if (!key) return m;
-    const url = `${manifest.base}/${key}`;
+    const url = copyUrl(src, manifest);
     if (url === src) return m;
     count++;
     return pre + url + post;
   }));
   return { html: out, count };
+}
+
+// emails/hidden-memes.json lists memes by their src, as memes.json has them,
+// so it has to follow the rewrite or hidden memes would show up again.
+// Returns how many entries moved.
+export async function rewriteHiddenMemes(manifest, emailsDir) {
+  const file = path.join(emailsDir, 'hidden-memes.json');
+  let hidden;
+  try {
+    hidden = JSON.parse(await readFile(file, 'utf-8'));
+  } catch (err) {
+    if (err.code === 'ENOENT') return 0;
+    throw err;
+  }
+  if (!Array.isArray(hidden)) return 0;
+  let count = 0;
+  const out = hidden.map((src) => {
+    if (typeof src !== 'string') return src;
+    const url = copyUrl(src, manifest);
+    if (url !== src) count++;
+    return url;
+  });
+  // Same formatting as the admin Worker writes (cloudflare/newsletter-admin).
+  if (count) await writeFile(file, JSON.stringify(out, null, 2) + '\n', 'utf-8');
+  return count;
 }
 
 /* ── Mirroring ── */
