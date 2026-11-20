@@ -1,13 +1,18 @@
 #!/usr/bin/env node
 // Fetches the latest sent EmailOctopus campaign and, if it's not already in
 // emails/data.json, adds it to the static archive (new HTML file + JSON entry).
-// Requires EMAILOCTOPUS_API_KEY in the environment.
+// Requires EMAILOCTOPUS_API_KEY in the environment. With the R2_* variables
+// (see lib/r2.mjs) set, it also backs the issue's images up to R2; either way
+// the issue is pointed at any R2 copies that already exist. R2 problems are
+// only warned about, so they never stop an issue from being archived.
 
 import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { fetchLatestSentCampaign, buildArchiveItem, writeSearchIndex } from './lib/eo.mjs';
 import { writeMemeIndex } from './lib/memes.mjs';
+import { imageMirror } from './lib/r2.mjs';
+import { loadManifest, mirrorIssueHtml } from './lib/images.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -29,7 +34,9 @@ async function main() {
 
   const { entry, file, html } = await buildArchiveItem(latest);
 
-  await writeFile(path.join(EMAILS_DIR, file), html, 'utf-8');
+  const r2 = imageMirror();
+  const manifest = await loadManifest(EMAILS_DIR);
+  await writeFile(path.join(EMAILS_DIR, file), await mirrorIssueHtml(html, { manifest, r2, emailsDir: EMAILS_DIR }), 'utf-8');
 
   data.unshift(entry);
   await writeFile(DATA_JSON, JSON.stringify(data), 'utf-8');

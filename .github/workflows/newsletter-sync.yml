@@ -4,14 +4,29 @@ on:
   schedule:
     # Fridays at 12:00 (EDT / UTC-4). Shifts to 11:00 local during EST (UTC-5).
     - cron: '0 16 * * 5'
+  # "Run workflow" also does the first full image backup (or any catch-up).
   workflow_dispatch: {}
 
 permissions:
   contents: write
 
+# A manual run and the schedule shouldn't push over each other.
+concurrency:
+  group: newsletter-sync
+  cancel-in-progress: false
+
 jobs:
   sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 330
+    env:
+      # Optional until R2 is set up: without them the issue is still archived,
+      # its images stay on EmailOctopus, and the run shows a yellow warning.
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_BUCKET: ${{ vars.R2_BUCKET }}
+      R2_PUBLIC_BASE_URL: ${{ vars.R2_PUBLIC_BASE_URL }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -22,20 +37,38 @@ jobs:
           node-version: '20'
 
       - name: Fetch latest newsletter issue
+        id: sync
         env:
           EMAILOCTOPUS_API_KEY: ${{ secrets.EMAILOCTOPUS_API_KEY }}
         run: node scripts/sync-newsletter.mjs
 
+      # Catches up anything not yet in R2: every image on the first run, then
+      # temporary failures and anything synced while R2 was down. Uploads
+      # nothing once everything is backed up. R2 problems fail this step (red),
+      # but the commit below still runs so the new issue is archived.
+      # Skipped, like the commit, if the sync failed: its output may be half
+      # written, and committing it would mark the issue as synced.
+      - name: Back up images to R2
+        if: ${{ !cancelled() && steps.sync.outcome == 'success' }}
+        timeout-minutes: 300
+        run: node scripts/mirror-images.mjs --skip-if-unset
+
       - name: Commit and push if changed
+        if: ${{ !cancelled() && steps.sync.outcome == 'success' }}
         run: |
           git add emails/
           if git diff --cached --quiet; then
-            echo "No new newsletter issue."
+            echo "Nothing changed."
             exit 0
+          fi
+          if git diff --cached --name-only --diff-filter=A -- 'emails/*.html' | grep -q .; then
+            message="Add latest newsletter issue"
+          else
+            message="Back up newsletter images to R2"
           fi
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -m "Add latest newsletter issue"
+          git commit -m "$message"
           # The best-of admin may have committed since checkout.
           git pull --rebase origin master
           git push
